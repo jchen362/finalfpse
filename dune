@@ -1,0 +1,8 @@
+(rule
+  (target finalfpse.zip)
+  (deps 
+   src/lib.ml
+   src/lib.mli
+  )
+  (action
+    (run zip -R finalfpse.zip %{deps})))
