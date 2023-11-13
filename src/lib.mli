@@ -1,34 +1,44 @@
 open Core
 
-
 type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
 type color = Black | White
+type position_key = { x : int; y : int } [@@deriving compare, sexp]
 
+module Board_State : sig
+  module Item_Key : Map.Key with type t = position_key
 
-type position_key = {x: int; y: int} [@@deriving compare, sexp]
+  type t
 
-module Board_State: sig
-    module Item_Key : Map.Key with type t = position_key
-    type t
-    val import: string -> t
-    val export: t -> string
-    val in_check: t -> color -> bool
-    val in_checkmate: t -> color -> bool 
-    val in_stalemate: t -> color -> bool
+  (*creates a board state from a string*)
+  val import : string -> t
 
+  (*exports a board state into string form*)
+  val export : t -> string
 
+  (*checks if given board state is in check*)
+  val in_check : t -> color -> bool
+
+  (*checks if given board state is in checkmate*)
+  val in_checkmate : t -> color -> bool
+
+  (*checks if given board state is in stalemate*)
+  val in_stalemate : t -> color -> bool
+  val move : t -> position_key -> position_key -> t option
 end
 
+(*NOTE: PAWN CAN BECOME QUEEN*)
 
-module type Piece = 
-    sig
-        val piece: string
-        val calculate_valid_moves: int -> int -> (*board state*) -> int list
-    end
+module type Piece = sig
+  val in_bounds : position_key -> bool
 
-module Pawn: Piece
-module Rook: Piece
-module King: Piece
-module Queen: Piece
-module Bishop: Piece
-module Knight: Piece
+  (*generates move for a piece based on possible positions DOES NOT ACCOUNT FOR THE ACTUAL BOARD STATE*)
+  val generate_moves : position_key -> color -> position_key list
+end
+
+module Make_Piece (_ : Piece) : Piece
+module Pawn : Piece
+module Rook : Piece
+module King : Piece
+module Queen : Piece
+module Bishop : Piece
+module Knight : Piece
