@@ -4,8 +4,8 @@ type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
 type color = Black | White
 type position_key = { x : int; y : int } [@@deriving compare, sexp]
 
-module type Board_State = sig
-  module Item_Key : Map.Key with type t = position_key
+module Board_state : sig
+  module Item_key : Map.Key with type t = position_key
 
   type t
 
@@ -15,6 +15,9 @@ module type Board_State = sig
   (*exports a board state into string form*)
   val export : t -> string
 
+  (*default chess board state with no moved pieces*)
+  val default_board : t
+
   (*checks if given board state is in check*)
   val in_check : t -> color -> bool
 
@@ -23,9 +26,7 @@ module type Board_State = sig
 
   (*checks if given board state is in stalemate*)
   val in_stalemate : t -> color -> bool
-
   val valid_moves_piece : t -> position_key -> position_key list
-
   val valid_moves_color : t -> color -> position_key list
 
   (*takes in board state, start and end position, returns option saying move was successfully made and board state*)
@@ -42,15 +43,10 @@ module type Piece = sig
 end
 
 module Tree : sig
-  type 'a t =
-  | Leaf
-  | Branch of {
-    item: 'a t;
-    nodes: 'a t list
-    }
+  type 'a t = Leaf | Branch of { item : 'a t; nodes : 'a t list }
 end
 
-module Make_Piece (_ : Piece) : Piece
+module Make_piece (_ : Piece) : Piece
 module Pawn : Piece
 module Rook : Piece
 module King : Piece

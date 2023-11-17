@@ -1,16 +1,23 @@
 (library
-  (name lib)
-  (modules lib)
-  (libraries 
-    core)
-  (preprocess
-    (pps ppx_jane)))
+ (name lib)
+ (modules lib)
+ (libraries core)
+ (preprocess
+  (pps ppx_jane)))
 
 (library
-  (name chess_ai)
-  (modules chess_ai)
-  (libraries 
-    core
-    lib)
-  (preprocess
-    (pps ppx_jane)))
+ (name chess_ai)
+ (modules chess_ai)
+ (libraries core lib)
+ (preprocess
+  (pps ppx_jane)))
+
+(library
+ (name server_lib)
+ (modules server_lib)
+ (libraries dream))
+
+(executable
+ (name server)
+ (modules server)
+ (libraries core server_lib))

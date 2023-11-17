@@ -5,6 +5,9 @@
    src/lib.mli
    src/chess_ai.ml
    src/chess_ai.mli
+   src/server_lib.ml
+   src/server_lib.mli
+   src/server.ml
   )
   (action
     (run zip -R finalfpse.zip %{deps})))

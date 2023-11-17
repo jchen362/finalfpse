@@ -1,8 +1,5 @@
 (test
-  (name tests)
-  (libraries
-    core
-    ounit2
-    lib
-  )
-  (preprocess (pps bisect_ppx)))
+ (name tests)
+ (libraries core ounit2 lib chess_ai)
+ (preprocess
+  (pps bisect_ppx)))
