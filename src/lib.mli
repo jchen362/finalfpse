@@ -4,7 +4,7 @@ type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
 type color = Black | White
 type position_key = { x : int; y : int } [@@deriving compare, sexp]
 
-module Board_State : sig
+module type Board_State = sig
   module Item_Key : Map.Key with type t = position_key
 
   type t
