@@ -3,6 +3,8 @@
   (deps 
    src/lib.ml
    src/lib.mli
+   src/chess_ai.ml
+   src/chess_ai.mli
   )
   (action
     (run zip -R finalfpse.zip %{deps})))

@@ -5,3 +5,12 @@
     core)
   (preprocess
     (pps ppx_jane)))
+
+(library
+  (name chess_ai)
+  (modules chess_ai)
+  (libraries 
+    core
+    lib)
+  (preprocess
+    (pps ppx_jane)))
