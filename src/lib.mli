@@ -6,8 +6,10 @@ type position_key = { x : int; y : int } [@@deriving compare, sexp]
 
 module Board_state : sig
   module Item_key : Map.Key with type t = position_key
+  (*board state is a map of positions to pieces*)
+  module Position_map : Map.S
 
-  type t
+  type t = Position_map
 
   (*creates a board state from a string*)
   val import : string -> t
@@ -26,8 +28,15 @@ module Board_state : sig
 
   (*checks if given board state is in stalemate*)
   val in_stalemate : t -> color -> bool
+
+  (*gets all possible moves for given piece*)
   val valid_moves_piece : t -> position_key -> position_key list
+
+  (*gets all possible moves for given color*)
   val valid_moves_color : t -> color -> position_key list
+
+  (*converts move from string to pair of position_key*)
+  val move_str_to_positions : string -> (position_key * position_key) option
 
   (*takes in board state, start and end position, returns option saying move was successfully made and board state*)
   val move : t -> position_key -> position_key -> t option
