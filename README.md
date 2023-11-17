@@ -1,5 +1,4 @@
 # Chess AI
-Final Project for Functional Programming
 Authors: Jianwei Chen (jchen362), Sana Mahmood (smahmo12), Brandon Wong (bwong19)
 
 # Libraries
@@ -18,7 +17,7 @@ dune build
 dune exec ./src/server.exe
 ```
 
-Now you may get move information based on the following API endpoints:
+Now information can be retrieved based on the following API endpoints:
 
 `/get-suggested-moves/{board}/{difficulty}`
 * board: board state in FEN string format
@@ -29,3 +28,15 @@ Now you may get move information based on the following API endpoints:
 * board: board state in FEN string format
 * move: move in algebraic notation string format (e.g. Ke1)
 * return value: float ranging from -n to n, where n is the maximum possible score
+
+# Implementation Order
+The order we plan to implement our Chess AI is as follows:
+1. Piece (`lib.ml`)
+2. Board (`lib.ml`)
+3. Evaluation (`chess_ai.ml`)
+4. Move Generation (`chess_ai.ml`)
+5. Endpoint functions (`server_lib.ml`)
+6. Server (`server.ml`)
+7. Other features if time permits, such as playing a full game, web UI, etc.
+
+Testing will be added incrementally in `tests.ml`.
