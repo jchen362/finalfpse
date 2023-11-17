@@ -1,5 +1,5 @@
 (rule
-  (target finalfpse.zip)
+  (target chess_ai.zip)
   (deps 
    src/lib.ml
    src/lib.mli
@@ -10,4 +10,4 @@
    src/server.ml
   )
   (action
-    (run zip -R finalfpse.zip %{deps})))
+    (run zip -R chess_ai.zip %{deps})))
