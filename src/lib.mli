@@ -4,8 +4,6 @@ type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
 type color = Black | White
 type position_key = { x : int; y : int } [@@deriving compare, sexp]
 
-
-(posiiton_key, position_key)
 module Board_state : sig
   module Item_key : Map.Key with type t = position_key
   (* board state is a map of positions to pieces *)
@@ -14,6 +12,7 @@ module Board_state : sig
   type t = Position_map
 
   (* creates a board state from a string *)
+  (* LATER: talk about what is the exact format of the string*)
   val import : string -> t
 
   (* exports a board state into string form *)
@@ -22,8 +21,12 @@ module Board_state : sig
   (* default chess board state with no moved pieces *)
   val default_board : t
 
-  (*If will see if the opposite color can move a piece to the king position -> call the can_move from the corresponding piece module and further check if it
-     is a actual move by considering the board state*)
+  (*Iterate through opposite peices to see if they can move to king
+     To see if they can move to king:
+        use valid move [PIECE_TYPE] to see
+
+     valid move [PIECE_TYPE] uses can_move
+    *)
   (* checks if given board state is in check 
      *)
   val in_check : t -> color -> bool
@@ -39,6 +42,8 @@ module Board_state : sig
   (* Given a starting position, will generate a list of valid moves for that piece on the starting position
      Going to call generate_moves and fix using the board state*)
   (* Remember, valid_moves_piece has to consider if moving the piece there causes a check*)
+
+  (*To further modularize the code -> will have a valid_moves_[PIECE_TYPE] functions for each type of piece (ex: bishop, queen, king, etc)*)
   val valid_moves_piece : t -> position_key -> position_key list
 
   (* gets all possible moves for given color *)
@@ -80,3 +85,4 @@ module King : Piece (*Jianwei*)
 module Queen : Piece (*Jianwei*)
 module Bishop : Piece (*Brandon*)
 module Knight : Piece (*Brandom*)
+
