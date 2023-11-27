@@ -25,7 +25,7 @@ module Board_state : sig
      To see if they can move to king:
         use valid move [PIECE_TYPE] to see
 
-     valid move [PIECE_TYPE] uses can_move
+     valid move [PIECE_TYPE] uses can_move from piece module
     *)
   (* checks if given board state is in check 
      *)
