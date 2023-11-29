@@ -117,10 +117,14 @@ module Queen : Piece =
       else if pos.y < 0 || pos.y > 7 then false
       else true
 
-
-    let is_first_move (pos: position_key) : bool =
-      if pos.y = 2 then true
-      else false
+    let is_first_move (pos: position_key) (curr_color: color): bool =
+      match curr_color with
+      | While ->
+        if pos.y = 6 then true
+        else false
+      | Black ->
+        if pos.y = 1 then true
+        else false 
 
     let can_move (start: position_key) (dest: position_key): bool =
       if not (in_bounds dest) then false
@@ -128,30 +132,33 @@ module Queen : Piece =
       else if abs (start.y - dest.y) = 1 && ((start.x = dest.x) || abs (start.x - dest.x) = 1) then true
       else false
     
-    let move_up (current: position_key) : position_key list =
+    let move_up (current: position_key) (color_multiplier: int) : position_key list =
       if (is_first_move current) then
-        [{x = current.x; y = current.y - 1}; {x = current.x; y = current.y - 2}]
+        [{x = current.x; y = current.y - (color_multiplier * 1)}; {x = current.x; y = current.y - (color_multiplier * 2)}]
       else
-        [{x = current.x; y = current.y - 1}]
+        [{x = current.x; y = current.y - (color_multiplier * 1)}]
 
-      let move_left_diag (current: position_key) (ls: position_key list) : position_key list =
-        if (in_bounds {x = current.x - 1; y = current.y - 1}) then
-          {x = current.x - 1; y = current.y - 1} :: ls
-        else ls
+    let move_left_diag (current: position_key) (color_multiplier: int) (ls: position_key list) : position_key list =
+      if (in_bounds {x = current.x - 1; y = current.y - (color_multiplier * 1)}) then
+        {x = current.x - 1; y = current.y - (color_multiplier * 1)} :: ls
+      else ls
 
-      let move_right_diag (current: position_key) (ls: position_key list) : position_key list =
-        if (in_bounds {x = current.x + 1; y = current.y - 1}) then
-          {x = current.x + 1; y = current.y - 1} :: ls
-        else ls
-        
+    let move_right_diag (current: position_key) (ls: position_key list) : position_key list =
+      if (in_bounds {x = current.x + 1; y = current.y - (color_multiplier * 1)}) then
+        {x = current.x + 1; y = current.y - (color_multiplier * 1)} :: ls
+      else ls   
     
     let generate_moves (start: position_key) (c: color): position_key list =
       if not (in_bounds start) then []
       else
+        let color_multiplier = match color with
+        White -> 1
+        Black -> -1
+        in
         move_up start
-        |> move_left_diag start
-        |> move_right_diag start
-      
+        |> move_left_diag start color_multiplier
+        |> move_right_diag start color_multiplier
+        
   end
 
 module Rook : Piece =
