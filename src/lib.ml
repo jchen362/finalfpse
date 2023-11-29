@@ -15,75 +15,159 @@ end
 
 (*Notes:
    assumed x was horizontal, y was vertical, top left is 0, 0*)
-module King : Piece =
-  struct
-    let in_bounds (pos: position_key): bool =
-      if pos.x < 0 || pos.x > 7 then false
-      else if pos.y < 0 || pos.y > 7 then false
-      else true
+module King : Piece = struct
+  let in_bounds (pos : position_key) : bool =
+    if pos.x < 0 || pos.x > 7 then false
+    else if pos.y < 0 || pos.y > 7 then false
+    else true
 
-    let can_move (start: position_key) (dest: position_key): bool =
-      if not (in_bounds dest) then false
-      else if (abs (start.x - dest.x) + abs (start.y - dest.y)) > 1 then false
-      else true
+  let can_move (start : position_key) (dest : position_key) : bool =
+    if not (in_bounds dest) then false
+    else if abs (start.x - dest.x) + abs (start.y - dest.y) > 1 then false
+    else true
 
-    let rec generate_moves_king_helper (start: position_key) (add: position_key list) (ls: position_key list): position_key list =
-      match add with
-      | [] -> ls
-      | h::t ->
-        if in_bounds ({x = start.x + h.x; y = start.y + h.y}) then generate_moves_king_helper start t ({x = start.x + h.x; y = start.y + h.y} :: ls)
+  let rec generate_moves_king_helper (start : position_key)
+      (add : position_key list) (ls : position_key list) : position_key list =
+    match add with
+    | [] -> ls
+    | h :: t ->
+        if in_bounds { x = start.x + h.x; y = start.y + h.y } then
+          generate_moves_king_helper start t
+            ({ x = start.x + h.x; y = start.y + h.y } :: ls)
         else generate_moves_king_helper start t ls
-    let generate_moves (start: position_key) (c: color): position_key list =
-      if not (in_bounds start) then []
-      else generate_moves_king_helper start ([{x = 1; y = 0}; {x = 1; y = 1}; {x = 1; y = -1}; {x = 0; y = 1}; {x = 0; y = -1}; {x = -1; y = 0}; {x = -1; y = -1}; {x = -1; y = 1}]) []
-  end
 
-  module Queen: Piece =
-  struct
-    let in_bounds (pos: position_key): bool =
-      if pos.x < 0 || pos.x > 7 then false
-      else if pos.y < 0 || pos.y > 7 then false
-      else true
+  let generate_moves (start : position_key) (c : color) : position_key list =
+    if not (in_bounds start) then []
+    else
+      generate_moves_king_helper start
+        [
+          { x = 1; y = 0 };
+          { x = 1; y = 1 };
+          { x = 1; y = -1 };
+          { x = 0; y = 1 };
+          { x = 0; y = -1 };
+          { x = -1; y = 0 };
+          { x = -1; y = -1 };
+          { x = -1; y = 1 };
+        ]
+        []
+end
 
-    let can_move (start: position_key) (dest: position_key): bool =
-      if not (in_bounds dest) then false
-      else if abs (start.x - dest.x) = abs (start.y - dest.y) then true
-      else false
+module Queen : Piece = struct
+  let in_bounds (pos : position_key) : bool =
+    if pos.x < 0 || pos.x > 7 then false
+    else if pos.y < 0 || pos.y > 7 then false
+    else true
 
-    let rec vert_up (current: position_key) (ls: position_key list): position_key list =
-      if not (in_bounds current) then ls
-      else vert_up ({x = current.x; y = current.y - 1}) (current :: ls)
-  
-    let rec vert_down (current: position_key) (ls: position_key list): position_key list =
-      if not (in_bounds current) then ls
-      else vert_down ({x = current.x; y = current.y + 1}) (current :: ls)
-  
-    let rec horizontal_left (current: position_key) (ls: position_key list): position_key list =
-        if not (in_bounds current) then ls
-        else horizontal_left ({x = current.x - 1; y = current.y}) (current :: ls)
-  
-    let rec horizontal_right (current: position_key) (ls: position_key list): position_key list =
-      if not (in_bounds current) then ls
-      else horizontal_right ({x = current.x + 1; y = current.y}) (current :: ls)
-    
-    let rec diag_right (current: position_key) (ls: position_key list): position_key list =
-      if not (in_bounds current) then ls
-      else diag_right ({x = current.x + 1; y = current.y + 1}) (current :: ls)
+  let can_move (start : position_key) (dest : position_key) : bool =
+    if not (in_bounds dest) then false
+    else if abs (start.x - dest.x) = abs (start.y - dest.y) then true
+    else false
 
-    let rec diag_left (current: position_key) (ls: position_key list): position_key list =
-      if not (in_bounds current) then ls
-      else diag_right ({x = current.x - 1; y = current.y - 1}) (current :: ls)
+  let rec vert_up (current : position_key) (ls : position_key list) :
+      position_key list =
+    if not (in_bounds current) then ls
+    else vert_up { x = current.x; y = current.y - 1 } (current :: ls)
 
-    let generate_moves_helper (start: position_key): position_key list =
-      vert_up ({x = start.x; y = start.y - 1}) [] 
-      |> vert_down ({x = start.x; y = start.y + 1}) 
-      |> horizontal_left ({x = start.x - 1; y = start.y}) 
-      |> horizontal_right ({x = start.x + 1; y = start.y})
-      |> diag_right ({x = start.x + 1; y = start.y + 1})
-      |> diag_left ({x = start.x - 1; y = start.y - 1})
+  let rec vert_down (current : position_key) (ls : position_key list) :
+      position_key list =
+    if not (in_bounds current) then ls
+    else vert_down { x = current.x; y = current.y + 1 } (current :: ls)
 
-    let generate_moves (start: position_key) (c: color): position_key list =
-      if not (in_bounds start) then []
-      else generate_moves_helper start
+  let rec horizontal_left (current : position_key) (ls : position_key list) :
+      position_key list =
+    if not (in_bounds current) then ls
+    else horizontal_left { x = current.x - 1; y = current.y } (current :: ls)
 
-  end
+  let rec horizontal_right (current : position_key) (ls : position_key list) :
+      position_key list =
+    if not (in_bounds current) then ls
+    else horizontal_right { x = current.x + 1; y = current.y } (current :: ls)
+
+  let rec diag_right (current : position_key) (ls : position_key list) :
+      position_key list =
+    if not (in_bounds current) then ls
+    else diag_right { x = current.x + 1; y = current.y + 1 } (current :: ls)
+
+  let rec diag_left (current : position_key) (ls : position_key list) :
+      position_key list =
+    if not (in_bounds current) then ls
+    else diag_left { x = current.x - 1; y = current.y - 1 } (current :: ls)
+
+  (* TODO: add down left and down right? not sure if that's how this code works - bwong *)
+
+  let generate_moves_helper (start : position_key) : position_key list =
+    vert_up { x = start.x; y = start.y - 1 } []
+    |> vert_down { x = start.x; y = start.y + 1 }
+    |> horizontal_left { x = start.x - 1; y = start.y }
+    |> horizontal_right { x = start.x + 1; y = start.y }
+    |> diag_right { x = start.x + 1; y = start.y + 1 }
+    |> diag_left { x = start.x - 1; y = start.y - 1 }
+
+  let generate_moves (start : position_key) (c : color) : position_key list =
+    if not (in_bounds start) then [] else generate_moves_helper start
+end
+
+module Bishop : Piece = struct
+  let in_bounds (pos : position_key) : bool =
+    if pos.x < 0 || pos.x > 7 then false
+    else if pos.y < 0 || pos.y > 7 then false
+    else true
+
+  (* sees if you can move a piece from start to end position DOES NOT ACCOUNT FOR ACTUAL BOARD STATE *)
+  let can_move (start : position_key) (dest : position_key) : bool =
+    if not (in_bounds dest) then false
+    else if abs (start.x - dest.x) <> abs (start.y - dest.y) then false
+    else true
+
+  let diag_dirs : position_key list =
+    [
+      { x = 1; y = 1 }; { x = 1; y = -1 }; { x = -1; y = 1 }; { x = -1; y = -1 };
+    ]
+
+  (* generates moves backwards, must reverse at end *)
+  let rec generate_diag_moves (start : position_key) (diag_dir : position_key) :
+      position_key list =
+    if not (in_bounds start) then []
+    else
+      match diag_dir with
+      | { x; y } ->
+          let new_pos = { x = start.x + x; y = start.y + y } in
+          if in_bounds new_pos then
+            new_pos :: generate_diag_moves start diag_dir
+          else []
+
+  (* generates move for a piece based on possible positions DOES NOT ACCOUNT FOR THE ACTUAL BOARD STATE *)
+  let generate_moves (start : position_key) (c : color) : position_key list =
+    List.concat_map diag_dirs ~f:(fun dir -> generate_diag_moves start dir)
+end
+
+module Knight : Piece = struct
+  let in_bounds (pos : position_key) : bool =
+    if pos.x < 0 || pos.x > 7 then false
+    else if pos.y < 0 || pos.y > 7 then false
+    else true
+
+  (* sees if you can move a piece from start to end position DOES NOT ACCOUNT FOR ACTUAL BOARD STATE *)
+  let can_move (start : position_key) (dest : position_key) : bool =
+    if abs (start.x - dest.x) = 2 && abs (start.y - dest.y) = 1 then true
+    else if abs (start.x - dest.x) = 1 && abs (start.y - dest.y) = 2 then true
+    else false
+
+  let knight_dirs : position_key list =
+    [
+      { x = 2; y = 1 };
+      { x = 2; y = -1 };
+      { x = 1; y = 2 };
+      { x = 1; y = -2 };
+      { x = -2; y = 1 };
+      { x = -2; y = -1 };
+      { x = -1; y = 2 };
+      { x = -1; y = -2 };
+    ]
+
+  (* generates move for a piece based on possible positions DOES NOT ACCOUNT FOR THE ACTUAL BOARD STATE *)
+  let generate_moves (start : position_key) (c : color) : position_key list =
+    List.map knight_dirs ~f:(fun dir ->
+        { x = start.x + dir.x; y = start.y + dir.y })
+end
