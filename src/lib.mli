@@ -79,6 +79,7 @@ end
 
 
 module Make_piece (_ : Piece) : Piece
+(* check in board state whether or not it is promoted and change the piece accordingly *)
 module Pawn : Piece (*Sana*)
 module Rook : Piece (*Sana*)
 module King : Piece (*Jianwei*)
