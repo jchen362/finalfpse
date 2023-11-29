@@ -130,7 +130,7 @@ module Queen : Piece =
 
     let is_first_move (pos: position_key) (curr_color: color): bool =
       match curr_color with
-      | While ->
+      | White ->
         if pos.y = 6 then true
         else false
       | Black ->
@@ -169,7 +169,7 @@ module Queen : Piece =
         move_up start
         |> move_left_diag start color_multiplier
         |> move_right_diag start color_multiplier
-        
+
   end
 
 module Rook : Piece =
