@@ -117,14 +117,15 @@ module Queen : Piece =
       else if pos.y < 0 || pos.y > 7 then false
       else true
 
+
+    let is_first_move (pos: position_key) : bool =
+      if pos.y = 2 then true
+      else false
+
     let can_move (start: position_key) (dest: position_key): bool =
       if not (in_bounds dest) then false
       else if (is_first_move start) && abs (start.y - dest.y) = 2 && (start.x = dest.x) then true
       else if abs (start.y - dest.y) = 1 && ((start.x = dest.x) || abs (start.x - dest.x) = 1) then true
-      else false
-
-    let is_first_move (pos: position_key) : bool =
-      if pos.y = 2 then true
       else false
     
     let move_up (current: position_key) : position_key list =
