@@ -85,15 +85,25 @@ module Queen : Piece =
     if not (in_bounds current) then ls
     else horizontal_right { x = current.x + 1; y = current.y } (current :: ls)
 
-  let rec diag_right (current : position_key) (ls : position_key list) :
+  let rec diag_right_up (current : position_key) (ls : position_key list) :
     position_key list =
     if not (in_bounds current) then ls
-    else diag_right { x = current.x + 1; y = current.y + 1 } (current :: ls)
+    else diag_right_up { x = current.x + 1; y = current.y - 1 } (current :: ls)
 
-  let rec diag_left (current : position_key) (ls : position_key list) :
+  let rec diag_left_up (current : position_key) (ls : position_key list) :
     position_key list =
     if not (in_bounds current) then ls
-    else diag_left { x = current.x - 1; y = current.y - 1 } (current :: ls)
+    else diag_left_up { x = current.x - 1; y = current.y + 1 } (current :: ls)
+
+  let rec diag_right_down (current : position_key) (ls : position_key list) :
+    position_key list =
+    if not (in_bounds current) then ls
+    else diag_right_down { x = current.x + 1; y = current.y + 1 } (current :: ls)
+
+  let rec diag_left_down (current : position_key) (ls : position_key list) :
+    position_key list =
+    if not (in_bounds current) then ls
+    else diag_left_down { x = current.x - 1; y = current.y - 1 } (current :: ls)
 
   (* TODO: add down left and down right? not sure if that's how this code works - bwong *)
 
@@ -102,9 +112,10 @@ module Queen : Piece =
     |> vert_down { x = start.x; y = start.y + 1 }
     |> horizontal_left { x = start.x - 1; y = start.y }
     |> horizontal_right { x = start.x + 1; y = start.y }
-    |> diag_right { x = start.x + 1; y = start.y + 1 }
-    |> diag_left { x = start.x - 1; y = start.y - 1 }
-
+    |> diag_right_up { x = start.x + 1; y = start.y - 1 }
+    |> diag_left_up { x = start.x - 1; y = start.y + 1 }
+    |> diag_right_down { x = start.x + 1; y = start.y + 1 }
+    |> diag_left_down { x = start.x - 1; y = start.y - 1 }
   let generate_moves (start : position_key) (c : color) : position_key list =
     if not (in_bounds start) then [] else generate_moves_helper start
 
