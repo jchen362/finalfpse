@@ -53,7 +53,8 @@ module King : Piece = struct
         []
 end
 
-module Queen : Piece = struct
+module Queen : Piece = 
+  struct
   let in_bounds (pos : position_key) : bool =
     if pos.x < 0 || pos.x > 7 then false
     else if pos.y < 0 || pos.y > 7 then false
@@ -78,6 +79,34 @@ module Queen : Piece = struct
       position_key list =
     if not (in_bounds current) then ls
     else horizontal_left { x = current.x - 1; y = current.y } (current :: ls)
+
+  let rec horizontal_right (current : position_key) (ls : position_key list) :
+    position_key list =
+    if not (in_bounds current) then ls
+    else horizontal_right { x = current.x + 1; y = current.y } (current :: ls)
+
+  let rec diag_right (current : position_key) (ls : position_key list) :
+    position_key list =
+    if not (in_bounds current) then ls
+    else diag_right { x = current.x + 1; y = current.y + 1 } (current :: ls)
+
+  let rec diag_left (current : position_key) (ls : position_key list) :
+    position_key list =
+    if not (in_bounds current) then ls
+    else diag_left { x = current.x - 1; y = current.y - 1 } (current :: ls)
+
+  (* TODO: add down left and down right? not sure if that's how this code works - bwong *)
+
+  let generate_moves_helper (start : position_key) : position_key list =
+    vert_up { x = start.x; y = start.y - 1 } []
+    |> vert_down { x = start.x; y = start.y + 1 }
+    |> horizontal_left { x = start.x - 1; y = start.y }
+    |> horizontal_right { x = start.x + 1; y = start.y }
+    |> diag_right { x = start.x + 1; y = start.y + 1 }
+    |> diag_left { x = start.x - 1; y = start.y - 1 }
+
+  let generate_moves (start : position_key) (c : color) : position_key list =
+    if not (in_bounds start) then [] else generate_moves_helper start
 
   end
 
@@ -124,7 +153,7 @@ module Queen : Piece = struct
       
   end
 
-  module Rook : Piece =
+module Rook : Piece =
   struct
     let in_bounds (pos: position_key): bool =
       if pos.x < 0 || pos.x > 7 then false
@@ -159,41 +188,12 @@ module Queen : Piece = struct
     let generate_moves (start: position_key) (c: color): position_key list =
       if not (in_bounds start) then []
       else
-        move_rook_up ({x = current.x; y = current.y - 1}) []
-        |> move_rook_down ({x = current.x; y = current.y + 1})
-        |> move_rook_left ({x = current.x - 1; y = current.y})
-        |> move_rook_right ({x = current.x + 1; y = current.y})
+        move_rook_up ({x = start.x; y = start.y - 1}) []
+        |> move_rook_down ({x = start.x; y = start.y + 1})
+        |> move_rook_left ({x = start.x - 1; y = start.y})
+        |> move_rook_right ({x = start.x + 1; y = start.y})
       
   end
-  let rec horizontal_right (current : position_key) (ls : position_key list) :
-      position_key list =
-    if not (in_bounds current) then ls
-    else horizontal_right { x = current.x + 1; y = current.y } (current :: ls)
-
-  let rec diag_right (current : position_key) (ls : position_key list) :
-      position_key list =
-    if not (in_bounds current) then ls
-    else diag_right { x = current.x + 1; y = current.y + 1 } (current :: ls)
-
-  let rec diag_left (current : position_key) (ls : position_key list) :
-      position_key list =
-    if not (in_bounds current) then ls
-    else diag_left { x = current.x - 1; y = current.y - 1 } (current :: ls)
-
-  (* TODO: add down left and down right? not sure if that's how this code works - bwong *)
-
-  let generate_moves_helper (start : position_key) : position_key list =
-    vert_up { x = start.x; y = start.y - 1 } []
-    |> vert_down { x = start.x; y = start.y + 1 }
-    |> horizontal_left { x = start.x - 1; y = start.y }
-    |> horizontal_right { x = start.x + 1; y = start.y }
-    |> diag_right { x = start.x + 1; y = start.y + 1 }
-    |> diag_left { x = start.x - 1; y = start.y - 1 }
-
-  let generate_moves (start : position_key) (c : color) : position_key list =
-    if not (in_bounds start) then [] else generate_moves_helper start
-end
-
 module Bishop : Piece = struct
   let in_bounds (pos : position_key) : bool =
     if pos.x < 0 || pos.x > 7 then false
