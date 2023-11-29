@@ -8,6 +8,8 @@
    src/server_lib.ml
    src/server_lib.mli
    src/server.ml
+   src/board.mli
+   src/board.ml
   )
   (action
     (run zip -R chess_ai.zip %{deps})))

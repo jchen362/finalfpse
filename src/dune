@@ -6,6 +6,13 @@
   (pps ppx_jane)))
 
 (library
+ (name board)
+ (modules board)
+ (libraries core lib)
+ (preprocess
+  (pps ppx_jane)))
+
+(library
  (name chess_ai)
  (modules chess_ai)
  (libraries core lib)
