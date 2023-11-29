@@ -65,11 +65,22 @@ module King : Piece =
     let rec horizontal_right (current: position_key) (ls: position_key list): position_key list =
       if not (in_bounds current) then ls
       else horizontal_right ({x = current.x + 1; y = current.y}) (current :: ls)
+    
+    let rec diag_right (current: position_key) (ls: position_key list): position_key list =
+      if not (in_bounds current) then ls
+      else diag_right ({x = current.x + 1; y = current.y + 1}) (current :: ls)
+
+    let rec diag_left (current: position_key) (ls: position_key list): position_key list =
+      if not (in_bounds current) then ls
+      else diag_right ({x = current.x - 1; y = current.y - 1}) (current :: ls)
+
     let generate_moves_helper (start: position_key): position_key list =
       vert_up ({x = start.x; y = start.y - 1}) [] 
-        |> vert_down ({x = start.x; y = start.y + 1}) 
-          |> horizontal_left ({x = start.x - 1; y = start.y}) 
-            |> horizontal_right ({x = start.x + 1; y = start.y})
+      |> vert_down ({x = start.x; y = start.y + 1}) 
+      |> horizontal_left ({x = start.x - 1; y = start.y}) 
+      |> horizontal_right ({x = start.x + 1; y = start.y})
+      |> diag_right ({x = start.x + 1; y = start.y + 1})
+      |> diag_left ({x = start.x - 1; y = start.y - 1})
 
     let generate_moves (start: position_key) (c: color): position_key list =
       if not (in_bounds start) then []
