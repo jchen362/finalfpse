@@ -1,9 +1,11 @@
 open Core
 
 type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
+type color = Black | White
+type position_key = { x : int; y : int } [@@deriving compare, sexp]
 
 module Board_state : sig
-  module Item_key : Map.Key with type t = position_key
+  module Item_key : Map.Key with type t = position_key 
   (* board state is a map of positions to pieces *)
   module Position_map : Map.S
 
@@ -11,7 +13,7 @@ module Board_state : sig
 
   (* creates a board state from a string *)
   (* LATER: talk about what is the exact format of the string*)
-  val import : string -> t
+  val import : string -> t option
 
   (* exports a board state into string form *)
   val export : t -> string
@@ -24,7 +26,7 @@ module Board_state : sig
         use valid move [PIECE_TYPE] to see
 
      valid move [PIECE_TYPE] uses can_move from piece module
-    *)
+  *)
   (* checks if given board state is in check 
      *)
   val in_check : t -> color -> bool
@@ -53,7 +55,7 @@ module Board_state : sig
   val alg_to_pos : string -> (position_key * position_key) option
 
   (* converts move from pair of position_key to algebraic notation (e.g. Ke1) *)
-  val pos_to_alg : (position_key * position_key) -> string
+  val pos_to_alg : position_key * position_key -> string
 
   (* takes in board state, start and end position, returns option saying move was successfully made and board state *)
   val move : t -> position_key -> position_key -> t option

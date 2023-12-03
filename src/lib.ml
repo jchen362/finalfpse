@@ -7,7 +7,7 @@ module type Piece = sig
   val in_bounds : position_key -> bool
 
   (* sees if you can move a piece from start to end position DOES NOT ACCOUNT FOR ACTUAL BOARD STATE *)
-  val can_move : position_key -> position_key -> bool
+  val can_move : position_key -> position_key -> color -> bool
 
   (* generates move for a piece based on possible positions DOES NOT ACCOUNT FOR THE ACTUAL BOARD STATE *)
   val generate_moves : position_key -> color -> position_key list
@@ -21,7 +21,8 @@ module King : Piece = struct
     else if pos.y < 0 || pos.y > 7 then false
     else true
 
-  let can_move (start : position_key) (dest : position_key) : bool =
+  let can_move (start : position_key) (dest : position_key) (curr_color : color)
+      : bool =
     if not (in_bounds dest) then false
     else if abs (start.x - dest.x) + abs (start.y - dest.y) > 1 then false
     else true
@@ -53,14 +54,14 @@ module King : Piece = struct
         []
 end
 
-module Queen : Piece = 
-  struct
+module Queen : Piece = struct
   let in_bounds (pos : position_key) : bool =
     if pos.x < 0 || pos.x > 7 then false
     else if pos.y < 0 || pos.y > 7 then false
     else true
 
-  let can_move (start : position_key) (dest : position_key) : bool =
+  let can_move (start : position_key) (dest : position_key) (curr_color : color)
+      : bool =
     if not (in_bounds dest) then false
     else if abs (start.x - dest.x) = abs (start.y - dest.y) then true
     else false
@@ -81,27 +82,27 @@ module Queen : Piece =
     else horizontal_left { x = current.x - 1; y = current.y } (current :: ls)
 
   let rec horizontal_right (current : position_key) (ls : position_key list) :
-    position_key list =
+      position_key list =
     if not (in_bounds current) then ls
     else horizontal_right { x = current.x + 1; y = current.y } (current :: ls)
 
   let rec diag_right_up (current : position_key) (ls : position_key list) :
-    position_key list =
+      position_key list =
     if not (in_bounds current) then ls
     else diag_right_up { x = current.x + 1; y = current.y - 1 } (current :: ls)
 
   let rec diag_left_up (current : position_key) (ls : position_key list) :
-    position_key list =
+      position_key list =
     if not (in_bounds current) then ls
     else diag_left_up { x = current.x - 1; y = current.y + 1 } (current :: ls)
 
   let rec diag_right_down (current : position_key) (ls : position_key list) :
-    position_key list =
+      position_key list =
     if not (in_bounds current) then ls
     else diag_right_down { x = current.x + 1; y = current.y + 1 } (current :: ls)
 
   let rec diag_left_down (current : position_key) (ls : position_key list) :
-    position_key list =
+      position_key list =
     if not (in_bounds current) then ls
     else diag_left_down { x = current.x - 1; y = current.y - 1 } (current :: ls)
 
@@ -116,103 +117,107 @@ module Queen : Piece =
     |> diag_left_up { x = start.x - 1; y = start.y + 1 }
     |> diag_right_down { x = start.x + 1; y = start.y + 1 }
     |> diag_left_down { x = start.x - 1; y = start.y - 1 }
+
   let generate_moves (start : position_key) (c : color) : position_key list =
     if not (in_bounds start) then [] else generate_moves_helper start
+end
 
-  end
+module Pawn : Piece = struct
+  let in_bounds (pos : position_key) : bool =
+    if pos.x < 0 || pos.x > 7 then false
+    else if pos.y < 0 || pos.y > 7 then false
+    else true
 
-  module Pawn : Piece =
-  struct
-    let in_bounds (pos: position_key): bool =
-      if pos.x < 0 || pos.x > 7 then false
-      else if pos.y < 0 || pos.y > 7 then false
-      else true
+  let is_first_move (pos : position_key) (curr_color : color) : bool =
+    match curr_color with
+    | White -> if pos.y = 6 then true else false
+    | Black -> if pos.y = 1 then true else false
 
-    let is_first_move (pos: position_key) (curr_color: color): bool =
-      match curr_color with
-      | White ->
-        if pos.y = 6 then true
-        else false
-      | Black ->
-        if pos.y = 1 then true
-        else false 
+  let can_move (start : position_key) (dest : position_key) (curr_color : color)
+      : bool =
+    if not (in_bounds dest) then false
+    else if
+      is_first_move start curr_color
+      && abs (start.y - dest.y) = 2
+      && start.x = dest.x
+    then true
+    else if
+      abs (start.y - dest.y) = 1
+      && (start.x = dest.x || abs (start.x - dest.x) = 1)
+    then true
+    else false
 
-    let can_move (start: position_key) (dest: position_key): bool =
-      if not (in_bounds dest) then false
-      else if (is_first_move start) && abs (start.y - dest.y) = 2 && (start.x = dest.x) then true
-      else if abs (start.y - dest.y) = 1 && ((start.x = dest.x) || abs (start.x - dest.x) = 1) then true
-      else false
-    
-    let move_up (current: position_key) (color_multiplier: int) : position_key list =
-      if (is_first_move current) then
-        [{x = current.x; y = current.y - (color_multiplier * 1)}; {x = current.x; y = current.y - (color_multiplier * 2)}]
-      else
-        [{x = current.x; y = current.y - (color_multiplier * 1)}]
+  let move_up (current : position_key) (color_multiplier : int)
+      (curr_color : color) : position_key list =
+    if is_first_move current curr_color then
+      [
+        { x = current.x; y = current.y - (color_multiplier * 1) };
+        { x = current.x; y = current.y - (color_multiplier * 2) };
+      ]
+    else [ { x = current.x; y = current.y - (color_multiplier * 1) } ]
 
-    let move_left_diag (current: position_key) (color_multiplier: int) (ls: position_key list) : position_key list =
-      if (in_bounds {x = current.x - 1; y = current.y - (color_multiplier * 1)}) then
-        {x = current.x - 1; y = current.y - (color_multiplier * 1)} :: ls
-      else ls
+  let move_left_diag (current : position_key) (color_multiplier : int)
+      (ls : position_key list) : position_key list =
+    if in_bounds { x = current.x - 1; y = current.y - (color_multiplier * 1) }
+    then { x = current.x - 1; y = current.y - (color_multiplier * 1) } :: ls
+    else ls
 
-    let move_right_diag (current: position_key) (ls: position_key list) : position_key list =
-      if (in_bounds {x = current.x + 1; y = current.y - (color_multiplier * 1)}) then
-        {x = current.x + 1; y = current.y - (color_multiplier * 1)} :: ls
-      else ls   
-    
-    let generate_moves (start: position_key) (c: color): position_key list =
-      if not (in_bounds start) then []
-      else
-        let color_multiplier = match color with
-        White -> 1
-        Black -> -1
-        in
-        move_up start
-        |> move_left_diag start color_multiplier
-        |> move_right_diag start color_multiplier
+  let move_right_diag (current : position_key) (color_multiplier : int)
+      (ls : position_key list) : position_key list =
+    if in_bounds { x = current.x + 1; y = current.y - (color_multiplier * 1) }
+    then { x = current.x + 1; y = current.y - (color_multiplier * 1) } :: ls
+    else ls
 
-  end
+  let generate_moves (start : position_key) (c : color) : position_key list =
+    if not (in_bounds start) then []
+    else
+      let color_multiplier = match c with White -> 1 | Black -> -1 in
+      move_up start color_multiplier c
+      |> move_left_diag start color_multiplier
+      |> move_right_diag start color_multiplier
+end
 
-module Rook : Piece =
-  struct
-    let in_bounds (pos: position_key): bool =
-      if pos.x < 0 || pos.x > 7 then false
-      else if pos.y < 0 || pos.y > 7 then false
-      else true
+module Rook : Piece = struct
+  let in_bounds (pos : position_key) : bool =
+    if pos.x < 0 || pos.x > 7 then false
+    else if pos.y < 0 || pos.y > 7 then false
+    else true
 
-    let can_move (start: position_key) (dest: position_key): bool =
-      if not (in_bounds dest) then false
-      else if (start.x = dest.x) || (start.y = dest.y) then true
-      else false
+  let can_move (start : position_key) (dest : position_key) (curr_color : color)
+      : bool =
+    if not (in_bounds dest) then false
+    else if start.x = dest.x || start.y = dest.y then true
+    else false
 
-    let rec move_rook_up (current: position_key) (ls: position_key list) : position_key list =
-        if not (in_bounds current) then ls
-        else
-          move_rook_up ({x = current.x; y = current.y - 1}) (current::ls)
-    
-    let rec move_rook_down (current: position_key) (ls: position_key list) : position_key list =
-      if not (in_bounds current) then ls
-      else
-        move_rook_down ({x = current.x; y = current.y + 1}) (current::ls)
+  let rec move_rook_up (current : position_key) (ls : position_key list) :
+      position_key list =
+    if not (in_bounds current) then ls
+    else move_rook_up { x = current.x; y = current.y - 1 } (current :: ls)
 
-    let rec move_rook_left (current: position_key) (ls: position_key list) : position_key list =
-      if not (in_bounds current) then ls
-      else
-        move_rook_left ({x = current.x - 1; y = current.y}) (current::ls)
+  let rec move_rook_down (current : position_key) (ls : position_key list) :
+      position_key list =
+    if not (in_bounds current) then ls
+    else move_rook_down { x = current.x; y = current.y + 1 } (current :: ls)
 
-    let rec move_rook_right (current: position_key) (ls: position_key list) : position_key list =
-      if not (in_bounds current) then ls
-      else
-        move_rook_right ({x = current.x + 1; y = current.y}) (current::ls)
-    
-    let generate_moves (start: position_key) (c: color): position_key list =
-      if not (in_bounds start) then []
-      else
-        move_rook_up ({x = start.x; y = start.y - 1}) []
-        |> move_rook_down ({x = start.x; y = start.y + 1})
-        |> move_rook_left ({x = start.x - 1; y = start.y})
-        |> move_rook_right ({x = start.x + 1; y = start.y})
-      
-  end
+  let rec move_rook_left (current : position_key) (ls : position_key list) :
+      position_key list =
+    if not (in_bounds current) then ls
+    else move_rook_left { x = current.x - 1; y = current.y } (current :: ls)
+
+  let rec move_rook_right (current : position_key) (ls : position_key list) :
+      position_key list =
+    if not (in_bounds current) then ls
+    else move_rook_right { x = current.x + 1; y = current.y } (current :: ls)
+
+  let generate_moves (start : position_key) (c : color) : position_key list =
+    if not (in_bounds start) then []
+    else
+      move_rook_up { x = start.x; y = start.y - 1 } []
+      |> move_rook_down { x = start.x; y = start.y + 1 }
+      |> move_rook_left { x = start.x - 1; y = start.y }
+      |> move_rook_right { x = start.x + 1; y = start.y }
+end
+
 module Bishop : Piece = struct
   let in_bounds (pos : position_key) : bool =
     if pos.x < 0 || pos.x > 7 then false
@@ -220,7 +225,8 @@ module Bishop : Piece = struct
     else true
 
   (* sees if you can move a piece from start to end position DOES NOT ACCOUNT FOR ACTUAL BOARD STATE *)
-  let can_move (start : position_key) (dest : position_key) : bool =
+  let can_move (start : position_key) (dest : position_key) (curr_color : color)
+      : bool =
     if not (in_bounds dest) then false
     else if abs (start.x - dest.x) <> abs (start.y - dest.y) then false
     else true
@@ -254,7 +260,8 @@ module Knight : Piece = struct
     else true
 
   (* sees if you can move a piece from start to end position DOES NOT ACCOUNT FOR ACTUAL BOARD STATE *)
-  let can_move (start : position_key) (dest : position_key) : bool =
+  let can_move (start : position_key) (dest : position_key) (curr_color : color)
+      : bool =
     if abs (start.x - dest.x) = 2 && abs (start.y - dest.y) = 1 then true
     else if abs (start.x - dest.x) = 1 && abs (start.y - dest.y) = 2 then true
     else false
