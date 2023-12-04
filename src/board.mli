@@ -1,10 +1,10 @@
 open Core
 
-type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
-type color = Black | White
+type piece_type = Pawn | Rook | Knight | Queen | King | Bishop 
+type color = Black | White [@@deriving equal]
 type position_key = { x : int; y : int } [@@deriving compare, sexp]
 
-type map_value = {piece: piece_type; color: Lib.color}
+type map_value = {piece: piece_type; color: color} 
 
 module Board_state : sig
   module Item_key : Map.Key with type t = position_key 
