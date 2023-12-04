@@ -6,9 +6,9 @@ open Core
 [@@@ocaml.warning "-33"]
 
 type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
-type color = Black | White
+type color = Black | White [@@deriving equal]
 type map_value = { piece : piece_type; color : color }
-type position_key = {x : int; y : int} [@@deriving compare, sexp]
+type position_key = { x : int; y : int } [@@deriving compare, sexp]
 
 let white_pawn = { piece = Pawn; color = White }
 let white_bishop = { piece = Bishop; color = White }
@@ -168,18 +168,83 @@ module Board_state = struct
     in
     Position_map.of_alist_exn (white_positions @ black_positions)
 
+<<<<<<< HEAD
   let aux_can_move (start : position_key) (dest : position_key)
+=======
+  let rec aux_can_move (board_state : t) (start : position_key) (dest : position_key)
+>>>>>>> 628b15a (adding aux functions to check can_move)
       (current : position_key) (multiplier : position_key) : bool =
-    false
+    let start_piece = Map.find_exn board_state start
+    in
+    if (current.x = dest.x) && (current.y = dest.y) then
+      (* base case *)
+      match Map.find board_state current with
+      | None -> true
+      | Some dest_piece_info ->
+        if (equal_color start_piece.color dest_piece_info.color) then false
+        else true
+    else
+      match Map.find board_state current with
+      | None ->
+        aux_can_move board_state start dest {x = (current.x + multiplier.x); y = (current.y + multiplier.y)} multiplier
+      | Some _ -> false
 
-  let can_move_vertical (start : position_key) (dest : position_key) : bool =
-    false
+  let can_move_vertical (board_state : t) (start : position_key) (dest : position_key) : bool =
+    if (start.x = dest.x) && (start.y = dest.y) then
+      false
+    else
+      let multiplier = 
+      if (start.y - dest.y) > 0 then
+        (* piece is moving up *)
+        {x = 0; y = -1}
+      else if (start.y - dest.y) < 0 then 
+        (* piece is moving down *)
+        {x = 0; y = 1}
+      else
+        (* no movement *)
+        {x = 0; y = 0}
+      in
+      aux_can_move board_state start dest {x = (start.x + multiplier.x); y = (start.y + multiplier.y)} multiplier
 
-  let can_move_horizontal (start : position_key) (dest : position_key) : bool =
-    false
+  let can_move_horizontal (board_state : t) (start : position_key) (dest : position_key) : bool =
+    if (start.x = dest.x) && (start.y = dest.y) then
+      false
+    else
+      let multiplier = 
+      if (start.x - dest.x) > 0 then
+        (* piece is moving left *)
+        {x = -1; y = 0}
+      else if (start.x - dest.x) < 0 then 
+        (* piece is moving right *)
+        {x = 1; y = 0}
+      else
+        (* no movement *)
+        {x = 0; y = 0}
+      in
+      aux_can_move board_state start dest {x = (start.x + multiplier.x); y = (start.y + multiplier.y)} multiplier
 
-  let can_move_diagonal (start : position_key) (dest : position_key) : bool =
-    false
+  let can_move_diagonal (board_state : t) (start : position_key) (dest : position_key) : bool =
+    if (start.x = dest.x) && (start.y = dest.y) then
+      false
+    else
+      let multiplier = 
+      if (start.x - dest.x) > 0 && (start.y - dest.y) > 0 then
+        (* piece is moving up-left *)
+        {x = -1; y = -1}
+      else if (start.x - dest.x) < 0 && (start.y - dest.y) > 0 then 
+        (* piece is moving up-right *)
+        {x = 1; y = -1}
+      else if (start.x - dest.x) > 0 && (start.y - dest.y) < 0 then 
+        (* piece is moving down-left *)
+        {x = -1; y = 1}
+      else if (start.x - dest.x) < 0 && (start.y - dest.y) < 0 then 
+        (* piece is moving down-right *)
+        {x = 1; y = 1}
+      else
+        (* no movement *)
+        {x = 0; y = 0}
+      in
+      aux_can_move board_state start dest {x = (start.x + multiplier.x); y = (start.y + multiplier.y)} multiplier
 
   let in_check (board : t) (c : color) : bool = false
   let in_checkmate (board : t) (c : color) : bool = false
