@@ -25,7 +25,7 @@ module King : Piece = struct
       : bool =
     if not (in_bounds dest) then false
     else if abs (start.x - dest.x) + abs (start.y - dest.y) > 1 then false
-    else true
+    else match curr_color with _ -> true
 
   let rec generate_moves_king_helper (start : position_key)
       (add : position_key list) (ls : position_key list) : position_key list =
@@ -38,20 +38,22 @@ module King : Piece = struct
         else generate_moves_king_helper start t ls
 
   let generate_moves (start : position_key) (c : color) : position_key list =
-    if not (in_bounds start) then []
-    else
-      generate_moves_king_helper start
-        [
-          { x = 1; y = 0 };
-          { x = 1; y = 1 };
-          { x = 1; y = -1 };
-          { x = 0; y = 1 };
-          { x = 0; y = -1 };
-          { x = -1; y = 0 };
-          { x = -1; y = -1 };
-          { x = -1; y = 1 };
-        ]
-        []
+    match c with
+    | _ ->
+        if not (in_bounds start) then []
+        else
+          generate_moves_king_helper start
+            [
+              { x = 1; y = 0 };
+              { x = 1; y = 1 };
+              { x = 1; y = -1 };
+              { x = 0; y = 1 };
+              { x = 0; y = -1 };
+              { x = -1; y = 0 };
+              { x = -1; y = -1 };
+              { x = -1; y = 1 };
+            ]
+            []
 end
 
 module Queen : Piece = struct
@@ -64,7 +66,7 @@ module Queen : Piece = struct
       : bool =
     if not (in_bounds dest) then false
     else if abs (start.x - dest.x) = abs (start.y - dest.y) then true
-    else false
+    else match curr_color with _ -> true
 
   let rec vert_up (current : position_key) (ls : position_key list) :
       position_key list =
@@ -119,7 +121,8 @@ module Queen : Piece = struct
     |> diag_left_down { x = start.x - 1; y = start.y - 1 }
 
   let generate_moves (start : position_key) (c : color) : position_key list =
-    if not (in_bounds start) then [] else generate_moves_helper start
+    match c with
+    | _ -> if not (in_bounds start) then [] else generate_moves_helper start
 end
 
 module Pawn : Piece = struct
@@ -187,7 +190,7 @@ module Rook : Piece = struct
       : bool =
     if not (in_bounds dest) then false
     else if start.x = dest.x || start.y = dest.y then true
-    else false
+    else match curr_color with _ -> true
 
   let rec move_rook_up (current : position_key) (ls : position_key list) :
       position_key list =
@@ -210,12 +213,14 @@ module Rook : Piece = struct
     else move_rook_right { x = current.x + 1; y = current.y } (current :: ls)
 
   let generate_moves (start : position_key) (c : color) : position_key list =
-    if not (in_bounds start) then []
-    else
-      move_rook_up { x = start.x; y = start.y - 1 } []
-      |> move_rook_down { x = start.x; y = start.y + 1 }
-      |> move_rook_left { x = start.x - 1; y = start.y }
-      |> move_rook_right { x = start.x + 1; y = start.y }
+    match c with
+    | _ ->
+        if not (in_bounds start) then []
+        else
+          move_rook_up { x = start.x; y = start.y - 1 } []
+          |> move_rook_down { x = start.x; y = start.y + 1 }
+          |> move_rook_left { x = start.x - 1; y = start.y }
+          |> move_rook_right { x = start.x + 1; y = start.y }
 end
 
 module Bishop : Piece = struct
@@ -229,7 +234,7 @@ module Bishop : Piece = struct
       : bool =
     if not (in_bounds dest) then false
     else if abs (start.x - dest.x) <> abs (start.y - dest.y) then false
-    else true
+    else match curr_color with _ -> true
 
   let diag_dirs : position_key list =
     [
@@ -250,7 +255,9 @@ module Bishop : Piece = struct
 
   (* generates move for a piece based on possible positions DOES NOT ACCOUNT FOR THE ACTUAL BOARD STATE *)
   let generate_moves (start : position_key) (c : color) : position_key list =
-    List.concat_map diag_dirs ~f:(fun dir -> generate_diag_moves start dir)
+    match c with
+    | _ ->
+        List.concat_map diag_dirs ~f:(fun dir -> generate_diag_moves start dir)
 end
 
 module Knight : Piece = struct
@@ -264,7 +271,7 @@ module Knight : Piece = struct
       : bool =
     if abs (start.x - dest.x) = 2 && abs (start.y - dest.y) = 1 then true
     else if abs (start.x - dest.x) = 1 && abs (start.y - dest.y) = 2 then true
-    else false
+    else match curr_color with _ -> true
 
   let knight_dirs : position_key list =
     [
@@ -280,6 +287,8 @@ module Knight : Piece = struct
 
   (* generates move for a piece based on possible positions DOES NOT ACCOUNT FOR THE ACTUAL BOARD STATE *)
   let generate_moves (start : position_key) (c : color) : position_key list =
-    List.map knight_dirs ~f:(fun dir ->
-        { x = start.x + dir.x; y = start.y + dir.y })
+    match c with
+    | _ ->
+        List.map knight_dirs ~f:(fun dir ->
+            { x = start.x + dir.x; y = start.y + dir.y })
 end
