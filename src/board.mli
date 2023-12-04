@@ -2,6 +2,8 @@ open Core
 
 type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
 
+type map_value = {piece: piece_type; color: Lib.color}
+
 module Board_state : sig
   module Item_key : Map.Key with type t = position_key
   (* board state is a map of positions to pieces *)
