@@ -168,11 +168,8 @@ module Board_state = struct
     in
     Position_map.of_alist_exn (white_positions @ black_positions)
 
-<<<<<<< HEAD
-  let aux_can_move (start : position_key) (dest : position_key)
-=======
+
   let rec aux_can_move (board_state : t) (start : position_key) (dest : position_key)
->>>>>>> 628b15a (adding aux functions to check can_move)
       (current : position_key) (multiplier : position_key) : bool =
     let start_piece = Map.find_exn board_state start
     in
