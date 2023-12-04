@@ -179,7 +179,7 @@ module Board_state = struct
   let valid_moves_piece (board : t) (start : position_key) : position_key list =
     []
 
-  let valid_moves_color (board : t) (c : color) : position_key list = p []
+  let valid_moves_color (board : t) (c : color) : position_key list = []
   let alg_to_pos (str : string) : (position_key * position_key) option = None
   let pos_to_alg (s : position_key * position_key) : string = "None"
 
