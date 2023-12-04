@@ -1,8 +1,14 @@
 open Core
-open Lib
+
+[@@@ocaml.warning "-27"]
+[@@@ocaml.warning "-39"]
+[@@@ocaml.warning "-32"]
+[@@@ocaml.warning "-33"]
 
 type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
-type map_value = { piece : piece_type; color : Lib.color }
+type color = Black | White
+type map_value = { piece : piece_type; color : color }
+type position_key = {x : int; y : int} [@@deriving compare, sexp]
 
 let white_pawn = { piece = Pawn; color = White }
 let white_bishop = { piece = Bishop; color = White }
@@ -19,8 +25,9 @@ let black_king = { piece = King; color = Black }
 
 module Board_state = struct
   module Position_map = Map.Make (struct
-    type t = Lib.position_key [@@deriving compare, sexp]
+    type t = position_key [@@deriving compare, sexp]
   end)
+
   type t = map_value Position_map.t
 
   let parse_piece (ch : char) : map_value option =
@@ -39,8 +46,17 @@ module Board_state = struct
     | 'k' -> Some black_king
     | _ -> None
 
-  let rec parse_rank (rank : char list) (acc : t) (x : int) (y : int) : t option
-      =
+  let rec add_piece (rank : char list) (acc : t) (x : int) (y : int)
+      (piece : map_value option) : t option =
+    match piece with
+    | None -> None
+    | Some piece -> (
+        let pos : position_key = { x; y } in
+        match Map.add acc ~key:pos ~data:piece with
+        | `Duplicate -> None
+        | `Ok new_map -> parse_rank rank new_map (x + 1) y)
+
+  and parse_rank (rank : char list) (acc : t) (x : int) (y : int) : t option =
     match rank with
     | [] -> if x > 7 then Some acc else None
     | hd :: tl -> (
@@ -48,14 +64,7 @@ module Board_state = struct
         | '1' .. '8' ->
             let count = Char.to_int hd - Char.to_int '0' in
             parse_rank tl acc (x + count) y
-        | _ -> (
-            match parse_piece hd with
-            | None -> None
-            | Some piece ->
-                let pos : position_key = { x; y } in
-                match Map.add acc ~key:pos ~data:piece with 
-                | `Duplicate -> None
-                | `Ok new_map -> parse_rank tl new_map (x + 1) y))
+        | _ -> add_piece tl acc x y (parse_piece hd))
 
   let parse_fen_board (fen_board : string) (acc : t) (x : int) (y : int) :
       t option =
@@ -159,7 +168,7 @@ module Board_state = struct
     in
     Position_map.of_alist_exn (white_positions @ black_positions)
 
-  let rec aux_can_move (start : position_key) (dest : position_key)
+  let aux_can_move (start : position_key) (dest : position_key)
       (current : position_key) (multiplier : position_key) : bool =
     false
 
