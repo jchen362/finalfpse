@@ -22,9 +22,9 @@
 (library
  (name server_lib)
  (modules server_lib)
- (libraries core dream))
+ (libraries core chess_ai dream))
 
 (executable
  (name server)
  (modules server)
- (libraries core server_lib))
+ (libraries core dream))
