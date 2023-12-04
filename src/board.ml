@@ -21,7 +21,6 @@ module Board_state = struct
   module Position_map = Map.Make (struct
     type t = Lib.position_key [@@deriving compare, sexp]
   end)
-
   type t = map_value Position_map.t
 
   let parse_piece (ch : char) : map_value option =
@@ -54,7 +53,9 @@ module Board_state = struct
             | None -> None
             | Some piece ->
                 let pos : position_key = { x; y } in
-                parse_rank tl (Map.add acc ~key:pos ~data:piece) (x + 1) y))
+                match Map.add acc ~key:pos ~data:piece with 
+                | `Duplicate -> None
+                | `Ok new_map -> parse_rank tl new_map (x + 1) y))
 
   let parse_fen_board (fen_board : string) (acc : t) (x : int) (y : int) :
       t option =
