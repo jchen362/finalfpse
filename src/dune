@@ -15,7 +15,7 @@
 (library
  (name chess_ai)
  (modules chess_ai)
- (libraries core lib)
+ (libraries core lib board)
  (preprocess
   (pps ppx_jane)))
 
