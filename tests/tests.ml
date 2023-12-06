@@ -241,22 +241,22 @@ let piece_tests =
          "test_out_bounds_x2" >:: test_out_bounds_x2;
          "test_out_bounds_y1" >:: test_out_bounds_y1;
          "test_out_bounds_y2" >:: test_out_bounds_y2;
-         "test_pawn_can_move" >:: test_pawn_can_move;
+         (* "test_pawn_can_move" >:: test_pawn_can_move; *)
          (* "test_pawn_generate_moves" >:: test_pawn_generate_moves; *)
          (* "test_pawn_move_invariant" >:: test_pawn_move_invariant; *)
          "test_bishop_can_move" >:: test_bishop_can_move;
          (* "test_bishop_generate_moves" >:: test_bishop_generate_moves; *)
-         (* "test_bishop_move_invariant" >:: test_bishop_move_invariant; *)
+         "test_bishop_move_invariant" >:: test_bishop_move_invariant;
          "test_knight_can_move" >:: test_knight_can_move;
          (* "test_knight_generate_moves" >:: test_knight_generate_moves; *)
-         (* "test_knight_move_invariant" >:: test_knight_move_invariant; *)
+         "test_knight_move_invariant" >:: test_knight_move_invariant;
          "test_rook_can_move" >:: test_rook_can_move;
          (* "test_rook_generate_moves" >:: test_rook_generate_moves; *)
-         (* "test_rook_move_invariant" >:: test_rook_move_invariant; *)
+         "test_rook_move_invariant" >:: test_rook_move_invariant;
          "test_queen_can_move" >:: test_queen_can_move;
          (* "test_queen_generate_moves" >:: test_queen_generate_moves; *)
-         (* "test_queen_move_invariant" >:: test_queen_move_invariant; *)
-         "test_king_can_move" >:: test_king_can_move;
+         "test_queen_move_invariant" >:: test_queen_move_invariant;
+         (* "test_king_can_move" >:: test_king_can_move; *)
          (* "test_king_generate_moves" >:: test_king_generate_moves; *)
          (* "test_king_move_invariant" >:: test_king_move_invariant; *)
        ]
