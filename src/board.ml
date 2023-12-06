@@ -1,5 +1,5 @@
 open Core
-open Lib
+include Lib
 
 [@@@ocaml.warning "-27"]
 [@@@ocaml.warning "-39"]
