@@ -1,9 +1,10 @@
 open Core
 
 type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
-type color = Black | White [@@deriving equal]
+type color = Black | White
 type map_value = { piece : piece_type; color : color }
 type position_key = { x : int; y : int } [@@deriving compare, sexp]
+type movement = {start: Lib.position_key; dest: Lib.position_key}
 
 module Board_state : sig
   
@@ -63,12 +64,12 @@ module Board_state : sig
   val valid_move_knight : t -> position_key -> position_key list
 
   (*To further modularize the code -> will have a valid_moves_[PIECE_TYPE] functions for each type of piece (ex: bishop, queen, king, etc)*)
-  val valid_moves_piece : t -> position_key -> position_key list
+  val valid_moves_piece : t -> position_key -> movement list
 
   (* gets all possible moves for given color *)
   (* It will repeatedly call valid_moves_piece for each piece of the specified color*)
   (*Then minimax can call this function*)
-  val valid_moves_color : t -> color -> position_key list
+  val valid_moves_color : t -> color -> movement list
 
   (* converts move from algebraic notation (e.g. Ke1) to pair of position_key *)
   val alg_to_pos : string -> (position_key * position_key) option

@@ -1,6 +1,6 @@
 open Core
 
-type color = Black | White
+type color = Black | White [@@deriving equal]
 type position_key = { x : int; y : int } [@@deriving compare, sexp]
 
 module type Piece = sig

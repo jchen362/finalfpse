@@ -1,4 +1,5 @@
 open Core
+include Lib
 
 [@@@ocaml.warning "-27"]
 [@@@ocaml.warning "-39"]
@@ -6,9 +7,8 @@ open Core
 [@@@ocaml.warning "-33"]
 
 type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
-type color = Black | White [@@deriving equal]
-type map_value = { piece : piece_type; color : color }
-type position_key = { x : int; y : int } [@@deriving compare, sexp]
+type map_value = { piece : piece_type; color : Lib.color }
+type movement = {start: Lib.position_key; dest: Lib.position_key}
 
 type move_direction = Vertical | Horizontal | Diagonal
 
@@ -27,10 +27,17 @@ let black_king = { piece = King; color = Black }
 
 module Board_state = struct
   module Position_map = Map.Make (struct
-    type t = position_key [@@deriving compare, sexp]
+    type t = Lib.position_key [@@deriving compare, sexp]
   end)
 
   type t = map_value Position_map.t
+
+  (*Returns true if they are the same color*)
+  let matches_color (c1: Lib.color) (c2: Lib.color): bool =
+    match c1, c2 with
+    | Black, Black -> true
+    | White, White -> true
+    | _,_ -> false
 
   let parse_piece (ch : char) : map_value option =
     match ch with
@@ -53,7 +60,7 @@ module Board_state = struct
     match piece with
     | None -> None
     | Some piece -> (
-        let pos : position_key = { x; y } in
+        let pos : Lib.position_key = { x; y } in
         match Map.add acc ~key:pos ~data:piece with
         | `Duplicate -> None
         | `Ok new_map -> parse_rank rank new_map (x + 1) y)
@@ -108,7 +115,7 @@ module Board_state = struct
         (acc : char list) : char list =
       if x > 7 then acc
       else
-        let pos : position_key = { x; y } in
+        let pos : Lib.position_key = { x; y } in
         let piece = Map.find board pos in
         match piece with
         | None -> export_rank_helper board (count + 1) (x + 1) y acc
@@ -171,8 +178,8 @@ module Board_state = struct
     Position_map.of_alist_exn (white_positions @ black_positions)
 
 
-  let rec aux_can_move (board_state : t) (start : position_key) (dest : position_key)
-      (current : position_key) (multiplier : position_key) : bool =
+  let rec aux_can_move (board_state : t) (start : Lib.position_key) (dest : Lib.position_key)
+      (current : Lib.position_key) (multiplier : Lib.position_key) : bool =
     let start_piece = Map.find_exn board_state start
     in
     if (current.x = dest.x) && (current.y = dest.y) then
@@ -180,7 +187,7 @@ module Board_state = struct
       match Map.find board_state current with
       | None -> true
       | Some dest_piece_info ->
-        if (equal_color start_piece.color dest_piece_info.color) then false
+        if (matches_color start_piece.color dest_piece_info.color) then false
         else true
     else
       match Map.find board_state current with
@@ -188,11 +195,11 @@ module Board_state = struct
         aux_can_move board_state start dest {x = (current.x + multiplier.x); y = (current.y + multiplier.y)} multiplier
       | Some _ -> false
 
-  let can_move_vertical (board_state : t) (start : position_key) (dest : position_key) : bool =
+  let can_move_vertical (board_state : t) (start : Lib.position_key) (dest : Lib.position_key) : bool =
     if (start.x = dest.x) && (start.y = dest.y) then
       false
     else
-      let multiplier = 
+      let multiplier: Lib.position_key = 
       if (start.y - dest.y) > 0 then
         (* piece is moving up *)
         {x = 0; y = -1}
@@ -205,11 +212,11 @@ module Board_state = struct
       in
       aux_can_move board_state start dest {x = (start.x + multiplier.x); y = (start.y + multiplier.y)} multiplier
 
-  let can_move_horizontal (board_state : t) (start : position_key) (dest : position_key) : bool =
+  let can_move_horizontal (board_state : t) (start : Lib.position_key) (dest : Lib.position_key) : bool =
     if (start.x = dest.x) && (start.y = dest.y) then
       false
     else
-      let multiplier = 
+      let multiplier: Lib.position_key = 
       if (start.x - dest.x) > 0 then
         (* piece is moving left *)
         {x = -1; y = 0}
@@ -222,11 +229,11 @@ module Board_state = struct
       in
       aux_can_move board_state start dest {x = (start.x + multiplier.x); y = (start.y + multiplier.y)} multiplier
 
-  let can_move_diagonal (board_state : t) (start : position_key) (dest : position_key) : bool =
+  let can_move_diagonal (board_state : t) (start : Lib.position_key) (dest : Lib.position_key) : bool =
     if (start.x = dest.x) && (start.y = dest.y) then
       false
     else
-      let multiplier = 
+      let multiplier: Lib.position_key = 
       if (start.x - dest.x) > 0 && (start.y - dest.y) > 0 then
         (* piece is moving up-left *)
         {x = -1; y = -1}
@@ -245,86 +252,9 @@ module Board_state = struct
       in
       aux_can_move board_state start dest {x = (start.x + multiplier.x); y = (start.y + multiplier.y)} multiplier
 
-  let in_check (board : t) (c : color) : bool = false
-  let in_checkmate (board : t) (c : color) : bool = false
-  let in_stalemate (board : t) (c : color) : bool = false
-
-  let aux_get_move_direction (start : position_key) (dest : position_key) : move_direction =
-    let x_diff = abs (start.x - dest.x)
-    in
-    let y_diff = abs (start.y - dest.y)
-    in
-    if x_diff = 0 && y_diff > 0 then Vertical
-    else if x_diff > 0 && y_diff = 0 then Horizontal
-    else Diagonal
-
-  let valid_move_pawn (board : t) (start : position_key) (c : color) : position_key list =
-    let start_piece = Map.find_exn board start
-    in
-    let candidate_moves = Lib.Pawn.generate_moves start start_piece.color
-    in
-    let rec aux_pawn_valid_move (aux_candidate_moves : position_key list) 
-    (valid_moves_ls : position_key list) : position_key list =
-      match aux_candidate_moves with
-      | [] -> valid_moves_ls
-      | current_move :: tl ->
-        match (aux_get_move_direction start current_move) with
-        | Vertical ->
-          if (can_move_vertical start current_move) then
-            aux_pawn_valid_move tl (current_move :: valid_moves_ls)
-          else
-            aux_pawn_valid_move tl valid_moves_ls
-        | Horizontal ->
-          if (can_move_horizontal start current_move) then
-            aux_pawn_valid_move tl (current_move :: valid_moves_ls)
-          else
-            aux_pawn_valid_move tl valid_moves_ls
-        | Diagonal ->
-          match (Map.find board current_move) with
-          | None ->
-            aux_pawn_valid_move tl valid_moves_ls
-          | Some _ ->
-            if (can_move_diagonal start current_move) then
-              aux_pawn_valid_move tl (current_move :: valid_moves_ls)
-            else
-              aux_pawn_valid_move tl valid_moves_ls
-      in
-      aux_pawn_valid_move candidate_moves []
-
-  let valid_move_rook (board : t) (start : position_key) : position_key list =
-    let start_piece = Map.find_exn board start
-    in
-    let candidate_moves = Lib.Rook.generate_moves start start_piece.color
-    in
-    let rec aux_rook_valid_move (aux_candidate_moves : position_key list) 
-    (valid_moves_ls : position_key list) : position_key list =
-      match aux_candidate_moves with
-      | [] -> valid_moves_ls
-      | current_move :: tl ->
-        match (aux_get_move_direction start current_move) with
-        | Vertical ->
-          if (can_move_vertical start current_move) then
-            aux_rook_valid_move tl (current_move :: valid_moves_ls)
-          else
-            aux_rook_valid_move tl valid_moves_ls
-        | Horizontal ->
-          if (can_move_horizontal start current_move) then
-            aux_rook_valid_move tl (current_move :: valid_moves_ls)
-          else
-            aux_rook_valid_move tl valid_moves_ls
-    in aux_rook_valid_move candidate_moves []
-
-  let valid_move_king (board : t) (start : position_key) : position_key list =
-    []
-
-  let valid_move_queen (board : t) (start : position_key) : position_key list =
-    []
-
-  let valid_move_bishop (board : t) (start : position_key) : position_key list =
-    []
-
-  let valid_move_knight (board : t) (start : position_key) : position_key list =
-    []
+  let in_check (board : t) (c : Lib.color) : bool = false
+  let in_checkmate (board : t) (c : Lib.color) : bool = false
+  let in_stalemate (board : t) (c : Lib.color) : bool = false
 
   let valid_moves_piece (board : t) (start : position_key) : position_key list =
     []
@@ -333,6 +263,6 @@ module Board_state = struct
   let alg_to_pos (str : string) : (position_key * position_key) option = None
   let pos_to_alg (s : position_key * position_key) : string = "None"
 
-  let move (board : t) (start : position_key) (dest : position_key) : t option =
+  let move (board : t) (start : Lib.position_key) (dest : Lib.position_key) : t option =
     None
 end
