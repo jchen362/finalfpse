@@ -15,12 +15,12 @@ module type Piece = sig
   val generate_moves : position_key -> color -> position_key list
 end
 
-module Tree : sig
+(* module Tree : sig
   type 'a t = Leaf | Branch of { item : 'a t; nodes : 'a t list }
 end
 
 
-module Make_piece (_ : Piece) : Piece
+module Make_piece (_ : Piece) : Piece *)
 (* check in board state whether or not it is promoted and change the piece accordingly *)
 module Pawn : Piece (*Sana*)
 module Rook : Piece (*Sana*)

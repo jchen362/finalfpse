@@ -1,8 +1,14 @@
 open Core
-open Lib
+
+[@@@ocaml.warning "-27"]
+[@@@ocaml.warning "-39"]
+[@@@ocaml.warning "-32"]
+[@@@ocaml.warning "-33"]
 
 type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
-type map_value = { piece : piece_type; color : Lib.color }
+type color = Black | White [@@deriving equal]
+type map_value = { piece : piece_type; color : color }
+type position_key = { x : int; y : int } [@@deriving compare, sexp]
 type movement = {start: Lib.position_key; dest: Lib.position_key}
 
 let white_pawn = { piece = Pawn; color = White }
@@ -20,8 +26,9 @@ let black_king = { piece = King; color = Black }
 
 module Board_state = struct
   module Position_map = Map.Make (struct
-    type t = Lib.position_key [@@deriving compare, sexp]
+    type t = position_key [@@deriving compare, sexp]
   end)
+
   type t = map_value Position_map.t
 
   let parse_piece (ch : char) : map_value option =
@@ -40,8 +47,17 @@ module Board_state = struct
     | 'k' -> Some black_king
     | _ -> None
 
-  let rec parse_rank (rank : char list) (acc : t) (x : int) (y : int) : t option
-      =
+  let rec add_piece (rank : char list) (acc : t) (x : int) (y : int)
+      (piece : map_value option) : t option =
+    match piece with
+    | None -> None
+    | Some piece -> (
+        let pos : position_key = { x; y } in
+        match Map.add acc ~key:pos ~data:piece with
+        | `Duplicate -> None
+        | `Ok new_map -> parse_rank rank new_map (x + 1) y)
+
+  and parse_rank (rank : char list) (acc : t) (x : int) (y : int) : t option =
     match rank with
     | [] -> if x > 7 then Some acc else None
     | hd :: tl -> (
@@ -49,14 +65,7 @@ module Board_state = struct
         | '1' .. '8' ->
             let count = Char.to_int hd - Char.to_int '0' in
             parse_rank tl acc (x + count) y
-        | _ -> (
-            match parse_piece hd with
-            | None -> None
-            | Some piece ->
-                let pos : position_key = { x; y } in
-                match Map.add acc ~key:pos ~data:piece with 
-                | `Duplicate -> None
-                | `Ok new_map -> parse_rank tl new_map (x + 1) y))
+        | _ -> add_piece tl acc x y (parse_piece hd))
 
   let parse_fen_board (fen_board : string) (acc : t) (x : int) (y : int) :
       t option =
@@ -160,18 +169,80 @@ module Board_state = struct
     in
     Position_map.of_alist_exn (white_positions @ black_positions)
 
-  let rec aux_can_move (board: t) (start : position_key) (dest : position_key)
+
+  let rec aux_can_move (board_state : t) (start : position_key) (dest : position_key)
       (current : position_key) (multiplier : position_key) : bool =
-    false
+    let start_piece = Map.find_exn board_state start
+    in
+    if (current.x = dest.x) && (current.y = dest.y) then
+      (* base case *)
+      match Map.find board_state current with
+      | None -> true
+      | Some dest_piece_info ->
+        if (equal_color start_piece.color dest_piece_info.color) then false
+        else true
+    else
+      match Map.find board_state current with
+      | None ->
+        aux_can_move board_state start dest {x = (current.x + multiplier.x); y = (current.y + multiplier.y)} multiplier
+      | Some _ -> false
 
-  let can_move_vertical (board: t) (start : position_key) (dest : position_key) : bool =
-    false
+  let can_move_vertical (board_state : t) (start : position_key) (dest : position_key) : bool =
+    if (start.x = dest.x) && (start.y = dest.y) then
+      false
+    else
+      let multiplier = 
+      if (start.y - dest.y) > 0 then
+        (* piece is moving up *)
+        {x = 0; y = -1}
+      else if (start.y - dest.y) < 0 then 
+        (* piece is moving down *)
+        {x = 0; y = 1}
+      else
+        (* no movement *)
+        {x = 0; y = 0}
+      in
+      aux_can_move board_state start dest {x = (start.x + multiplier.x); y = (start.y + multiplier.y)} multiplier
 
-  let can_move_horizontal (board: t) (start : position_key) (dest : position_key) : bool =
-    false
+  let can_move_horizontal (board_state : t) (start : position_key) (dest : position_key) : bool =
+    if (start.x = dest.x) && (start.y = dest.y) then
+      false
+    else
+      let multiplier = 
+      if (start.x - dest.x) > 0 then
+        (* piece is moving left *)
+        {x = -1; y = 0}
+      else if (start.x - dest.x) < 0 then 
+        (* piece is moving right *)
+        {x = 1; y = 0}
+      else
+        (* no movement *)
+        {x = 0; y = 0}
+      in
+      aux_can_move board_state start dest {x = (start.x + multiplier.x); y = (start.y + multiplier.y)} multiplier
 
-  let can_move_diagonal (board: t) (start : position_key) (dest : position_key) : bool =
-    false
+  let can_move_diagonal (board_state : t) (start : position_key) (dest : position_key) : bool =
+    if (start.x = dest.x) && (start.y = dest.y) then
+      false
+    else
+      let multiplier = 
+      if (start.x - dest.x) > 0 && (start.y - dest.y) > 0 then
+        (* piece is moving up-left *)
+        {x = -1; y = -1}
+      else if (start.x - dest.x) < 0 && (start.y - dest.y) > 0 then 
+        (* piece is moving up-right *)
+        {x = 1; y = -1}
+      else if (start.x - dest.x) > 0 && (start.y - dest.y) < 0 then 
+        (* piece is moving down-left *)
+        {x = -1; y = 1}
+      else if (start.x - dest.x) < 0 && (start.y - dest.y) < 0 then 
+        (* piece is moving down-right *)
+        {x = 1; y = 1}
+      else
+        (* no movement *)
+        {x = 0; y = 0}
+      in
+      aux_can_move board_state start dest {x = (start.x + multiplier.x); y = (start.y + multiplier.y)} multiplier
 
   let in_check (board : t) (c : color) : bool = false
   let in_checkmate (board : t) (c : color) : bool = false
@@ -242,8 +313,8 @@ module Board_state = struct
   (*Returns true if they are the same color*)
   let matches_color (c1: color) (c2: color): bool =
     match c1, c2 with
-    | Lib.Black, Lib.Black -> true
-    | Lib.White, Lib.White -> true
+    | Black, Black -> true
+    | White, White -> true
     | _,_ -> false
   
   (*Returns all possible moves given a color*)
