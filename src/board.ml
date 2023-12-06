@@ -10,8 +10,6 @@ type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
 type map_value = { piece : piece_type; color : Lib.color }
 type movement = {start: Lib.position_key; dest: Lib.position_key}
 
-type move_direction = Vertical | Horizontal | Diagonal
-
 let white_pawn = { piece = Pawn; color = White }
 let white_bishop = { piece = Bishop; color = White }
 let white_knight = { piece = Knight; color = White }
@@ -256,12 +254,74 @@ module Board_state = struct
   let in_checkmate (board : t) (c : Lib.color) : bool = false
   let in_stalemate (board : t) (c : Lib.color) : bool = false
 
-  let valid_moves_piece (board : t) (start : position_key) : position_key list =
-    []
+  let teammate_in_pos (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =
+    let col = (Map.find_exn board start).color
+    in
+    match Map.find board dest with
+    | None -> false
+    | Some x ->
+      begin match x.color, col with
+      | Lib.Black, Lib.Black -> true
+      | Lib.White, Lib.White -> true
+      | _,_ -> false
+      end
 
-  let valid_moves_color (board : t) (c : color) : position_key list = []
-  let alg_to_pos (str : string) : (position_key * position_key) option = None
-  let pos_to_alg (s : position_key * position_key) : string = "None"
+  let valid_move_king (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =
+    (*Teammate is already in destination*)
+    if not (teammate_in_pos board start dest) then false
+    else true
+
+  let valid_move_queen (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =
+    if not (dest.x - start.x = 0) && not (dest.y - start.y = 0) then can_move_diagonal board start dest
+    else if (dest.x - start.x = 0) && not (dest.y - start.y = 0) then can_move_vertical board start dest
+    else if (dest.x - start.x = 0) && (dest.y - start.y = 0) then false
+    else can_move_horizontal board start dest
+
+  let valid_move_bishop (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool = false
+  let valid_move_pawn (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool = false
+  let valid_move_knight (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool = false
+  let valid_move_rook (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool = false
+
+  (*Checks to see if it is a valid_move*)
+  let valid_move (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =
+    match Map.find board start with
+    | None -> false
+    | Some x -> begin match x.piece with
+      | Pawn -> valid_move_pawn board start dest
+      | Knight -> valid_move_knight board start dest
+      | Rook -> valid_move_rook board start dest
+      | Bishop -> valid_move_bishop board start dest
+      | Queen -> valid_move_queen board start dest
+      | King -> valid_move_king board start dest
+      end
+
+  (*Helper method for valid_moves_piece*)
+  let rec valid_moves_piece_helper (board: t) (start: Lib.position_key) (ls: Lib.position_key list) (valid_ls: movement list): movement list =
+    match ls with
+    | [] -> valid_ls
+    | h::t ->
+      if valid_move board start h then valid_moves_piece_helper board start t ({start = start; dest = h} :: valid_ls)
+      else valid_moves_piece_helper board start t valid_ls
+
+  (*Returns all valid moves for a given piece in {start, end} format for each element*)
+  let valid_moves_piece (board : t) (start : Lib.position_key) : movement list =
+    match Map.find board start with
+    | None -> []
+    | Some x -> begin match x.piece with
+      | Pawn -> valid_moves_piece_helper board start (Lib.Pawn.generate_moves start x.color) []
+      | Knight -> valid_moves_piece_helper board start (Lib.Knight.generate_moves start x.color) []
+      | Rook -> valid_moves_piece_helper board start (Lib.Rook.generate_moves start x.color) []
+      | Bishop -> valid_moves_piece_helper board start (Lib.Bishop.generate_moves start x.color) []
+      | Queen -> valid_moves_piece_helper board start (Lib.Queen.generate_moves start x.color) []
+      | King -> valid_moves_piece_helper board start (Lib.King.generate_moves start x.color) []
+      end
+  
+  (*Returns all possible moves given a color*)
+  let valid_moves_color (board : t) (c : Lib.color) : movement list =
+    Map.fold board ~init:[] ~f:(fun ~key:key ~data:data accum -> if matches_color data.color c then accum @ (valid_moves_piece board key) else accum)
+
+  let alg_to_pos (str : string) : (Lib.position_key * Lib.position_key) option = None
+  let pos_to_alg (s : Lib.position_key * Lib.position_key) : string = "None"
 
   let move (board : t) (start : Lib.position_key) (dest : Lib.position_key) : t option =
     None

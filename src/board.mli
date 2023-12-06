@@ -45,24 +45,6 @@ module Board_state : sig
      Going to call generate_moves and fix using the board state*)
   (* Remember, valid_moves_piece has to consider if moving the piece there causes a check*)
 
-  (* generate all the valid moves the pawn can make based on board state *)
-  val valid_move_pawn : t -> position_key -> position_key list
-
-  (* generate all the valid moves the rook can make based on board state *)
-  val valid_move_rook : t -> position_key -> position_key list
-
-  (* generate all the valid moves the king can make based on board state *)
-  val valid_move_king : t -> position_key -> position_key list
-
-  (* generate all the valid moves the queen can make based on board state *)
-  val valid_move_queen : t -> position_key -> position_key list
-
-  (* generate all the valid moves the bishop can make based on board state *)
-  val valid_move_bishop : t -> position_key -> position_key list
-
-  (* generate all the valid moves the knight can make based on board state *)
-  val valid_move_knight : t -> position_key -> position_key list
-
   (*To further modularize the code -> will have a valid_moves_[PIECE_TYPE] functions for each type of piece (ex: bishop, queen, king, etc)*)
   val valid_moves_piece : t -> position_key -> movement list
 
