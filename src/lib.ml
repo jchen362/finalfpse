@@ -250,7 +250,7 @@ module Bishop : Piece = struct
       | { x; y } ->
           let new_pos = { x = start.x + x; y = start.y + y } in
           if in_bounds new_pos then
-            new_pos :: generate_diag_moves start diag_dir
+            new_pos :: generate_diag_moves new_pos diag_dir
           else []
 
   (* generates move for a piece based on possible positions DOES NOT ACCOUNT FOR THE ACTUAL BOARD STATE *)

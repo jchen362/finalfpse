@@ -8,7 +8,7 @@ open Core
 type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
 type color = Black | White [@@deriving equal]
 type map_value = { piece : piece_type; color : color }
-type position_key = {x : int; y : int} [@@deriving compare, sexp]
+type position_key = { x : int; y : int } [@@deriving compare, sexp]
 
 let white_pawn = { piece = Pawn; color = White }
 let white_bishop = { piece = Bishop; color = White }
@@ -167,6 +167,7 @@ module Board_state = struct
       ]
     in
     Position_map.of_alist_exn (white_positions @ black_positions)
+
 
   let rec aux_can_move (board_state : t) (start : position_key) (dest : position_key)
       (current : position_key) (multiplier : position_key) : bool =
