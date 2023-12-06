@@ -1,4 +1,5 @@
 open Core
+open Lib
 
 [@@@ocaml.warning "-27"]
 [@@@ocaml.warning "-39"]
@@ -28,6 +29,13 @@ module Board_state = struct
   end)
 
   type t = map_value Position_map.t
+
+  (*Returns true if they are the same color*)
+  let matches_color (c1: Lib.color) (c2: Lib.color): bool =
+    match c1, c2 with
+    | Black, Black -> true
+    | White, White -> true
+    | _,_ -> false
 
   let parse_piece (ch : char) : map_value option =
     match ch with
@@ -177,7 +185,7 @@ module Board_state = struct
       match Map.find board_state current with
       | None -> true
       | Some dest_piece_info ->
-        if (equal_color start_piece.color dest_piece_info.color) then false
+        if (matches_color start_piece.color dest_piece_info.color) then false
         else true
     else
       match Map.find board_state current with
@@ -307,13 +315,6 @@ module Board_state = struct
       | Queen -> valid_moves_piece_helper board start (Lib.Queen.generate_moves start x.color) []
       | King -> valid_moves_piece_helper board start (Lib.King.generate_moves start x.color) []
       end
-
-  (*Returns true if they are the same color*)
-  let matches_color (c1: Lib.color) (c2: Lib.color): bool =
-    match c1, c2 with
-    | Black, Black -> true
-    | White, White -> true
-    | _,_ -> false
   
   (*Returns all possible moves given a color*)
   let valid_moves_color (board : t) (c : Lib.color) : movement list =
