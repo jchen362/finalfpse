@@ -3,21 +3,21 @@
  (modules lib)
  (libraries core)
  (preprocess
-  (pps ppx_jane)))
+  (pps ppx_jane bisect_ppx)))
 
 (library
  (name board)
  (modules board)
  (libraries core lib)
  (preprocess
-  (pps ppx_jane)))
+  (pps ppx_jane bisect_ppx)))
 
 (library
  (name chess_ai)
  (modules chess_ai)
  (libraries core lib board)
  (preprocess
-  (pps ppx_jane)))
+  (pps ppx_jane bisect_ppx)))
 
 (library
  (name server_lib)
