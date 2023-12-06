@@ -5,9 +5,6 @@ type color = Black | White [@@deriving equal]
 type map_value = { piece : piece_type; color : color }
 type position_key = { x : int; y : int } [@@deriving compare, sexp]
 
-
-type map_value = {piece: piece_type; color: color} 
-
 module Board_state : sig
   
   (* board state is a map of positions to pieces *)

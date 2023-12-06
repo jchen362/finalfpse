@@ -51,29 +51,29 @@ let test_out_bounds_y2 _ =
   assert_equal false @@ Queen.in_bounds pos_out_y2;
   assert_equal false @@ King.in_bounds pos_out_y2
 
-let default_pos_white_pawn = { x = 4; y = 1 }
+let default_pos_black_pawn = { x = 4; y = 1 }
 let start_pos = { x = 4; y = 4 }
 
 let end_pos_vert =
   [
+    { x = 4; y = 7 };
+    { x = 4; y = 6 };
+    { x = 4; y = 5 };
     { x = 4; y = 0 };
     { x = 4; y = 1 };
     { x = 4; y = 2 };
     { x = 4; y = 3 };
-    { x = 4; y = 5 };
-    { x = 4; y = 6 };
-    { x = 4; y = 7 };
   ]
 
 let end_pos_horiz =
   [
+    { x = 7; y = 4 };
+    { x = 6; y = 4 };
+    { x = 5; y = 4 };
     { x = 0; y = 4 };
     { x = 1; y = 4 };
     { x = 2; y = 4 };
     { x = 3; y = 4 };
-    { x = 5; y = 4 };
-    { x = 6; y = 4 };
-    { x = 7; y = 4 };
   ]
 
 let end_pos_diag_positive =
@@ -97,11 +97,11 @@ let end_pos_diag_negative =
     { x = 7; y = 1 };
   ]
 
-let end_pos_default_white_pawn =
-  [ { x = 3; y = 2 }; { x = 4; y = 2 }; { x = 5; y = 2 }; { x = 4; y = 3 } ]
+let end_pos_default_black_pawn =
+  [{ x = 5; y = 2 }; { x = 3; y = 2 }; { x = 4; y = 2 }; { x = 4; y = 3 }]
 
-let end_pos_white_pawn =
-  [ { x = 3; y = 5 }; { x = 4; y = 5 }; { x = 5; y = 5 } ]
+let end_pos_black_pawn =
+  [{ x = 5; y = 5 }; { x = 3; y = 5 }; { x = 4; y = 5 }]
 
 let end_pos_knight =
   [
@@ -130,14 +130,18 @@ let end_pos_king =
 let test_pawn_can_move _ =
   assert_equal true
   @@ List.for_all
-       ~f:(fun end_pos -> Pawn.can_move start_pos end_pos White)
-       end_pos_white_pawn;
+       ~f:(fun end_pos -> Pawn.can_move start_pos end_pos Black)
+       end_pos_black_pawn;
   assert_equal true
   @@ List.for_all
-       ~f:(fun end_pos -> Pawn.can_move default_pos_white_pawn end_pos White)
-       end_pos_default_white_pawn
+       ~f:(fun end_pos -> Pawn.can_move default_pos_black_pawn end_pos Black)
+       end_pos_default_black_pawn
 
-let test_pawn_generate_moves _ = assert_equal true true
+let test_pawn_generate_moves _ = 
+  assert_equal end_pos_default_black_pawn 
+  @@ (Pawn.generate_moves default_pos_black_pawn Black);
+  assert_equal end_pos_black_pawn
+  @@ (Pawn.generate_moves start_pos Black)
 
 let test_pawn_move_invariant _ =
   assert_equal true
@@ -186,7 +190,9 @@ let test_rook_can_move _ =
        ~f:(fun end_pos -> Rook.can_move start_pos end_pos White)
        end_pos_vert
 
-let test_rook_generate_moves _ = assert_equal true true
+let test_rook_generate_moves _ = 
+  assert_equal (end_pos_horiz @ end_pos_vert)
+  @@ Rook.generate_moves start_pos White
 
 let test_rook_move_invariant _ =
   assert_equal true
@@ -241,9 +247,9 @@ let piece_tests =
          "test_out_bounds_x2" >:: test_out_bounds_x2;
          "test_out_bounds_y1" >:: test_out_bounds_y1;
          "test_out_bounds_y2" >:: test_out_bounds_y2;
-         (* "test_pawn_can_move" >:: test_pawn_can_move; *)
-         (* "test_pawn_generate_moves" >:: test_pawn_generate_moves; *)
-         (* "test_pawn_move_invariant" >:: test_pawn_move_invariant; *)
+         "test_pawn_can_move" >:: test_pawn_can_move;
+         "test_pawn_generate_moves" >:: test_pawn_generate_moves;
+         "test_pawn_move_invariant" >:: test_pawn_move_invariant;
          "test_bishop_can_move" >:: test_bishop_can_move;
          (* "test_bishop_generate_moves" >:: test_bishop_generate_moves; *)
          "test_bishop_move_invariant" >:: test_bishop_move_invariant;
@@ -251,7 +257,7 @@ let piece_tests =
          (* "test_knight_generate_moves" >:: test_knight_generate_moves; *)
          "test_knight_move_invariant" >:: test_knight_move_invariant;
          "test_rook_can_move" >:: test_rook_can_move;
-         (* "test_rook_generate_moves" >:: test_rook_generate_moves; *)
+         "test_rook_generate_moves" >:: test_rook_generate_moves;
          "test_rook_move_invariant" >:: test_rook_move_invariant;
          "test_queen_can_move" >:: test_queen_can_move;
          (* "test_queen_generate_moves" >:: test_queen_generate_moves; *)
