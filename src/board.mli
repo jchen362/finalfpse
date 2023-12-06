@@ -1,7 +1,7 @@
 open Core
 
 type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
-type color = Black | White [@@deriving equal]
+type color = Black | White
 type map_value = { piece : piece_type; color : color }
 type position_key = { x : int; y : int } [@@deriving compare, sexp]
 
