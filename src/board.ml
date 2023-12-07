@@ -256,6 +256,89 @@ module Board_state = struct
   let in_checkmate (board : t) (c : Lib.color) : bool = false
   let in_stalemate (board : t) (c : Lib.color) : bool = false
 
+  let aux_get_move_direction (start : position_key) (dest : position_key) : move_direction =
+    let x_diff = abs (start.x - dest.x)
+    in
+    let y_diff = abs (start.y - dest.y)
+    in
+    if x_diff = 0 && y_diff > 0 then Vertical
+    else if x_diff > 0 && y_diff = 0 then Horizontal
+    else Diagonal
+
+  let valid_move_pawn (board : t) (start : position_key) (c : color) : position_key list =
+    let start_piece = Map.find_exn board start
+    in
+    let candidate_moves = Lib.Pawn.generate_moves start start_piece.color
+    in
+    let rec aux_pawn_valid_move (aux_candidate_moves : position_key list) 
+    (valid_moves_ls : position_key list) : position_key list =
+      match aux_candidate_moves with
+      | [] -> valid_moves_ls
+      | current_move :: tl ->
+        match (aux_get_move_direction start current_move) with
+        | Vertical ->
+          if (can_move_vertical board start current_move) then
+            aux_pawn_valid_move tl (current_move :: valid_moves_ls)
+          else
+            aux_pawn_valid_move tl valid_moves_ls
+        | Horizontal ->
+          if (can_move_horizontal board start current_move) then
+            aux_pawn_valid_move tl (current_move :: valid_moves_ls)
+          else
+            aux_pawn_valid_move tl valid_moves_ls
+        | Diagonal ->
+          match (Map.find board current_move) with
+          | None ->
+            aux_pawn_valid_move tl valid_moves_ls
+          | Some _ ->
+            if (can_move_diagonal board start current_move) then
+              aux_pawn_valid_move tl (current_move :: valid_moves_ls)
+            else
+              aux_pawn_valid_move tl valid_moves_ls
+      in
+      aux_pawn_valid_move candidate_moves []
+
+  let valid_move_rook (board : t) (start : position_key) : position_key list =
+    let start_piece = Map.find_exn board start
+    in
+    let candidate_moves = Lib.Rook.generate_moves start start_piece.color
+    in
+    let rec aux_rook_valid_move (aux_candidate_moves : position_key list) 
+    (valid_moves_ls : position_key list) : position_key list =
+      match aux_candidate_moves with
+      | [] -> valid_moves_ls
+      | current_move :: tl ->
+        match (aux_get_move_direction start current_move) with
+        | Vertical ->
+          if (can_move_vertical board start current_move) then
+            aux_rook_valid_move tl (current_move :: valid_moves_ls)
+          else
+            aux_rook_valid_move tl valid_moves_ls
+        | Horizontal ->
+          if (can_move_horizontal board start current_move) then
+            aux_rook_valid_move tl (current_move :: valid_moves_ls)
+          else
+            aux_rook_valid_move tl valid_moves_ls
+        | Diagonal ->
+          aux_rook_valid_move tl valid_moves_ls
+    in aux_rook_valid_move candidate_moves []
+
+  let valid_move_king (board : t) (start : position_key) : position_key list =
+    []
+
+  let valid_move_queen (board : t) (start : position_key) : position_key list =
+    []
+
+  let valid_move_bishop (board : t) (start : position_key) : position_key list =
+    []
+
+  let valid_move_knight (board : t) (start : position_key) : position_key list =
+    []
+
+  let valid_moves_piece (board : t) (start : position_key) : position_key list =
+    []
+
+
   let valid_moves_piece (board : t) (start : position_key) : position_key list =
     []
 
