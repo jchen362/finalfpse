@@ -10,6 +10,8 @@ type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
 type map_value = { piece : piece_type; color : Lib.color }
 type movement = {start: Lib.position_key; dest: Lib.position_key}
 
+type move_direction = Vertical | Horizontal | Diagonal
+
 let white_pawn = { piece = Pawn; color = White }
 let white_bishop = { piece = Bishop; color = White }
 let white_knight = { piece = Knight; color = White }
@@ -266,6 +268,15 @@ module Board_state = struct
       | _,_ -> false
       end
 
+  let aux_get_move_direction (start : position_key) (dest : position_key) : move_direction =
+    let x_diff = abs (start.x - dest.x)
+    in
+    let y_diff = abs (start.y - dest.y)
+    in
+    if x_diff = 0 && y_diff > 0 then Vertical
+    else if x_diff > 0 && y_diff = 0 then Horizontal
+    else Diagonal
+
   let valid_move_king (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =
     (*Teammate is already in destination*)
     if not (teammate_in_pos board start dest) then false
@@ -278,9 +289,21 @@ module Board_state = struct
     else can_move_horizontal board start dest
 
   let valid_move_bishop (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool = false
-  let valid_move_pawn (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool = false
   let valid_move_knight (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool = false
-  let valid_move_rook (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool = false
+  let valid_move_pawn (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =
+    match (aux_get_move_direction start dest) with
+    | Vertical -> can_move_vertical board start dest
+    | Horizontal -> can_move_horizontal board start dest
+    | Diagonal ->
+      match (Map.find board dest) with
+      | None -> false
+      | Some _ -> can_move_diagonal board start dest
+
+  let valid_move_rook (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =
+    match (aux_get_move_direction start dest) with
+    | Vertical -> can_move_vertical board start dest
+    | Horizontal -> can_move_horizontal board start dest
+    | Diagonal -> false
 
   (*Checks to see if it is a valid_move*)
   let valid_move (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =
