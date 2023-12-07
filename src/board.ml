@@ -288,8 +288,18 @@ module Board_state = struct
     else if (dest.x - start.x = 0) && (dest.y - start.y = 0) then false
     else can_move_horizontal board start dest
 
-  let valid_move_bishop (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool = false
-  let valid_move_knight (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool = false
+  let valid_move_bishop (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =
+    match (aux_get_move_direction start dest) with
+    | Vertical -> false
+    | Horizontal -> false
+    | Diagonal -> can_move_diagonal board start dest
+
+  let valid_move_knight (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool = 
+    match (aux_get_move_direction start dest) with
+    | Vertical -> false
+    | Horizontal -> false
+    | Diagonal -> can_move_diagonal board start dest
+    
   let valid_move_pawn (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =
     match (aux_get_move_direction start dest) with
     | Vertical -> can_move_vertical board start dest
