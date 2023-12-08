@@ -319,6 +319,10 @@ let test_valid_moves_ls_pawn _ =
 let test_valid_move_rook _ =
   assert_equal [] @@ (Board_state.valid_moves_piece default_board default_white_left_rook)
 
+let int_gen = Int.gen_incl (-1000) 1000
+let random_x_pos = Quickcheck.random_value int_gen
+let random_y_pos = Quickcheck.random_value int_gen
+
 let test_valid_moves_piece _ = (
   assert_equal (Board_state.valid_moves_piece default_board default_white_king |> List.length) 0;
   assert_equal (Board_state.valid_moves_piece default_board default_white_pawn_2 |> List.length) 2;
@@ -327,6 +331,7 @@ let test_valid_moves_piece _ = (
   assert_equal (Board_state.valid_moves_piece default_board default_white_left_bishop|> List.length) 0;
   assert_equal (Board_state.valid_moves_piece default_board default_white_queen |> List.length) 0;
   assert_equal (Board_state.valid_moves_piece default_board {x = 4; y = 4} |> List.length) 0;
+  assert_equal ((Board_state.valid_moves_piece default_board {x = random_x_pos; y = random_x_pos} |> List.length) >= 0) true
 )
 
 let test_check _ = (
