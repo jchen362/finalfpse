@@ -177,7 +177,6 @@ module Board_state = struct
     in
     Position_map.of_alist_exn (white_positions @ black_positions)
 
-
   let rec aux_can_move (board_state : t) (start : Lib.position_key) (dest : Lib.position_key)
       (current : Lib.position_key) (multiplier : Lib.position_key) : bool =
     let start_piece = Map.find_exn board_state start
@@ -298,8 +297,8 @@ module Board_state = struct
     match (aux_get_move_direction start dest) with
     | Vertical -> false
     | Horizontal -> false
-    | Diagonal -> can_move_diagonal board start dest
-    
+    | Diagonal -> aux_can_move board start dest dest {x = 0; y = 0} (* since knight can jump over pieces, we only need to check the piece on the destination position (if any) *)
+
   let valid_move_pawn (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =
     match (aux_get_move_direction start dest) with
     | Vertical -> can_move_vertical board start dest
