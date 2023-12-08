@@ -326,6 +326,7 @@ let test_valid_moves_piece _ = (
   assert_equal (Board_state.valid_moves_piece default_board default_white_left_rook |> List.length) 0;
   assert_equal (Board_state.valid_moves_piece default_board default_white_left_bishop|> List.length) 0;
   assert_equal (Board_state.valid_moves_piece default_board default_white_queen |> List.length) 0;
+  assert_equal (Board_state.valid_moves_piece default_board {x = 4; y = 4} |> List.length) 0;
 )
 
 let test_check _ = (
