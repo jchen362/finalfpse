@@ -323,6 +323,9 @@ let test_valid_moves_piece _ = (
   assert_equal (Board_state.valid_moves_piece default_board default_white_king |> List.length) 0;
   assert_equal (Board_state.valid_moves_piece default_board default_white_pawn_2 |> List.length) 2;
   assert_equal (Board_state.valid_moves_piece default_board default_white_left_knight |> List.length) 2;
+  assert_equal (Board_state.valid_moves_piece default_board default_white_left_rook |> List.length) 0;
+  assert_equal (Board_state.valid_moves_piece default_board default_white_left_bishop|> List.length) 0;
+  assert_equal (Board_state.valid_moves_piece default_board default_white_queen |> List.length) 0;
 )
 
 let test_check _ = (
