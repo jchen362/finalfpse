@@ -49,7 +49,7 @@ module Board_state : sig
   val valid_move  : t -> Lib.position_key -> Lib.position_key -> bool
 
   (*To further modularize the code -> will have a valid_moves_[PIECE_TYPE] functions for each type of piece (ex: bishop, queen, king, etc)*)
-  val valid_moves_piece : t -> position_key -> movement list
+  val valid_moves_piece : t -> Lib.position_key -> movement list
 
   (* gets all possible moves for given color *)
   (* It will repeatedly call  s_piece for each piece of the specified color*)
@@ -63,5 +63,5 @@ module Board_state : sig
   val pos_to_alg : position_key * position_key -> string
 
   (* takes in board state, start and end position, returns option saying move was successfully made and board state *)
-  val move : t -> position_key -> position_key -> t 
+  val move : t -> position_key -> position_key -> t
 end
