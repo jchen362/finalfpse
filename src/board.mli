@@ -45,11 +45,14 @@ module Board_state : sig
      Going to call generate_moves and fix using the board state*)
   (* Remember, valid_moves_piece has to consider if moving the piece there causes a check*)
 
+  (*Checks to see if it is a valid_move*)
+  val valid_move  : t -> Lib.position_key -> Lib.position_key -> bool
+
   (*To further modularize the code -> will have a valid_moves_[PIECE_TYPE] functions for each type of piece (ex: bishop, queen, king, etc)*)
   val valid_moves_piece : t -> position_key -> movement list
 
   (* gets all possible moves for given color *)
-  (* It will repeatedly call valid_moves_piece for each piece of the specified color*)
+  (* It will repeatedly call  s_piece for each piece of the specified color*)
   (*Then minimax can call this function*)
   val valid_moves_color : t -> color -> movement list
 
