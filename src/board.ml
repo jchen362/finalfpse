@@ -316,7 +316,7 @@ let default_board : t =
 
   let valid_move_king (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =
     (*Teammate is already in destination*)
-    if not (teammate_in_pos board start dest) then false
+    if (teammate_in_pos board start dest) then false
     else true
 
   let valid_move_queen (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =

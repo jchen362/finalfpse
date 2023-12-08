@@ -1,7 +1,7 @@
 open Core
 open Lib
 
-[@@warning "-27"]
+[@@@ocaml.warning "-27"]
 
 module type Evaluation = sig
   val pawn_score : float array array
@@ -14,7 +14,7 @@ module type Evaluation = sig
   (* returns a score for passed board state*)
   val evaluate : Board.Board_state.t -> color -> int
 end
-(* 
+
 module Eval : Evaluation = struct
   let pawn_score = [| [| 0.0 |] |] 
   let knight_score = [| [| 0.0 |] |] 
@@ -24,9 +24,9 @@ module Eval : Evaluation = struct
   let bishop_score = [| [| 0.0 |] |] 
 
   let evaluate b c = match b, c with 
-    | b, c -> 10
+    | a, b -> 10
   
-end *)
+end
 
 module type Minimax = sig
   include Evaluation

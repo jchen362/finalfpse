@@ -252,20 +252,20 @@ let piece_tests =
          "test_pawn_generate_moves" >:: test_pawn_generate_moves;
          "test_pawn_move_invariant" >:: test_pawn_move_invariant;
          "test_bishop_can_move" >:: test_bishop_can_move;
-         (* "test_bishop_generate_moves" >:: test_bishop_generate_moves; *)
+         "test_bishop_generate_moves" >:: test_bishop_generate_moves;
          "test_bishop_move_invariant" >:: test_bishop_move_invariant;
          "test_knight_can_move" >:: test_knight_can_move;
-         (* "test_knight_generate_moves" >:: test_knight_generate_moves; *)
+         "test_knight_generate_moves" >:: test_knight_generate_moves;
          "test_knight_move_invariant" >:: test_knight_move_invariant;
          "test_rook_can_move" >:: test_rook_can_move;
          "test_rook_generate_moves" >:: test_rook_generate_moves;
          "test_rook_move_invariant" >:: test_rook_move_invariant;
          "test_queen_can_move" >:: test_queen_can_move;
-         (* "test_queen_generate_moves" >:: test_queen_generate_moves; *)
+         "test_queen_generate_moves" >:: test_queen_generate_moves;
          "test_queen_move_invariant" >:: test_queen_move_invariant;
-         (* "test_king_can_move" >:: test_king_can_move; *)
-         (* "test_king_generate_moves" >:: test_king_generate_moves; *)
-         (* "test_king_move_invariant" >:: test_king_move_invariant; *)
+         "test_king_can_move" >:: test_king_can_move;
+         "test_king_generate_moves" >:: test_king_generate_moves;
+         "test_king_move_invariant" >:: test_king_move_invariant;
        ]
 
 let default_board = Board_state.default_board
@@ -318,6 +318,19 @@ let test_valid_moves_ls_pawn _ =
 let test_valid_move_rook _ =
   assert_equal [] @@ (Board_state.valid_moves_piece default_board default_white_left_rook)
 
+let test_valid_moves_piece _ = (
+  assert_equal (Board_state.valid_moves_piece default_board default_white_king |> List.length) 0;
+)
+
+let test_check _ = (
+  assert_equal (Board_state.in_check default_board Black) false;
+  assert_equal (Board_state.in_check default_board White) false;
+)
+
+let test_checkmate _ = (
+  assert_equal (Board_state.in_checkmate default_board Black) false;
+  assert_equal (Board_state.in_checkmate default_board White) false;
+)
 let board_tests = "board tests" >: test_list [
   "test_valid_move_pawn"      >:: test_valid_move_pawn;
   "test_valid_move_rook"      >:: test_valid_move_rook;
@@ -327,6 +340,8 @@ let board_tests = "board tests" >: test_list [
   (*"test_valid_move_king"      >:: test_valid_move_king;*)
   "test_valid_moves_ls_pawn"  >:: test_valid_moves_ls_pawn;
   "test_valid_move_rook"      >:: test_valid_move_rook;
+  "test_valid_moves_piece" >:: test_valid_moves_piece;
+  "test_check"                >:: test_check;
 ]
 
 let series = "chess tests" >::: [ piece_tests; board_tests ]

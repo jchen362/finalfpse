@@ -24,7 +24,7 @@ module King : Piece = struct
   let can_move (start : position_key) (dest : position_key) (curr_color : color)
       : bool =
     if not (in_bounds dest) then false
-    else if abs (start.x - dest.x) + abs (start.y - dest.y) > 1 then false
+    else if abs (start.x - dest.x) > 1 || abs (start.y - dest.y) > 1 then false
     else match curr_color with _ -> true
 
   let rec generate_moves_king_helper (start : position_key)
@@ -65,6 +65,8 @@ module Queen : Piece = struct
   let can_move (start : position_key) (dest : position_key) (curr_color : color)
       : bool =
     if not (in_bounds dest) then false
+    else if abs (start.x - dest.x) > 0 && abs(start.y - dest.y) = 0 then true
+    else if abs (start.x - dest.x) = 0 && abs (start.y - dest.y) > 0 then true
     else if abs (start.x - dest.x) = abs (start.y - dest.y) then true
     else match curr_color with _ -> true
 
