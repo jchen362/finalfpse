@@ -323,12 +323,7 @@ module Board_state = struct
   let valid_move_king (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     (*Teammate is already in destination*)
-<<<<<<< HEAD
-    if (teammate_in_pos board start dest) then false
-    else true
-=======
-    if not (teammate_in_pos board start dest) then false else true
->>>>>>> cd56e8f (fixed import/export)
+    if teammate_in_pos board start dest then false else true
 
   let valid_move_queen (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
