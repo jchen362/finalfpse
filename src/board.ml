@@ -6,7 +6,7 @@ include Lib
 [@@@ocaml.warning "-32"]
 [@@@ocaml.warning "-33"]
 
-type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
+type piece_type = Pawn | Rook | Knight | Queen | King | Bishop [@@deriving equal]
 type map_value = { piece : piece_type; color : Lib.color }
 type movement = {start: Lib.position_key; dest: Lib.position_key}
 
@@ -293,10 +293,6 @@ let default_board : t =
       in
       aux_can_move board_state start dest {x = (start.x + multiplier.x); y = (start.y + multiplier.y)} multiplier
 
-  let in_check (board : t) (c : Lib.color) : bool = false
-  let in_checkmate (board : t) (c : Lib.color) : bool = false
-  let in_stalemate (board : t) (c : Lib.color) : bool = false
-
   let teammate_in_pos (board: t) (start: Lib.position_key) (dest: Lib.position_key): bool =
     let col = (Map.find_exn board start).color
     in
@@ -390,13 +386,45 @@ let default_board : t =
       | King -> valid_moves_piece_helper board start (Lib.King.generate_moves start x.color) []
       end
   
-  (*Returns all possible moves given a color*)
-  let valid_moves_color (board : t) (c : Lib.color) : movement list =
+  (*Returns all possible moves given a color doesn't check for if the board would be in check after moving there*)
+  let valid_moves_color_no_check (board : t) (c : Lib.color) : movement list =
     Map.fold board ~init:[] ~f:(fun ~key:key ~data:data accum -> if matches_color data.color c then accum @ (valid_moves_piece board key) else accum)
 
   let alg_to_pos (str : string) : (Lib.position_key * Lib.position_key) option = None
   let pos_to_alg (s : Lib.position_key * Lib.position_key) : string = "None"
 
-  let move (board : t) (start : Lib.position_key) (dest : Lib.position_key) : t option =
-    None
+  let pos_equal (a: Lib.position_key) (b: Lib.position_key): bool =
+    if a.x = b.x && a.y = b.y then true
+    else false
+
+  let in_check (board : t) (c : Lib.color) : bool =
+    let opposite_color =
+      match c with
+      | Lib.Black -> Lib.White
+      | Lib.White -> Lib.Black
+    in
+    (*finds king position of color specified*)
+    let king_pos = Map.fold board ~init:{x = 0; y = 0} ~f:(fun ~key:key ~data:data accum -> if (equal_piece_type data.piece King) && (matches_color data.color c) then key else accum)
+    in
+    (*Finds if there is a valid move the king position by seeing if valid_moves_color gives a valid_move to king position*)
+    valid_moves_color_no_check board opposite_color |> List.fold ~init:false ~f:(fun accum move -> if pos_equal move.dest king_pos then true else accum)
+  let in_stalemate (board : t) (c : Lib.color) : bool = false
+
+  let move (board : t) (start : Lib.position_key) (dest : Lib.position_key) : t =
+    if not (valid_move board start dest) then board
+    else
+      let start_piece = Map.find board start |> Option.value_exn
+      in
+      (*remove pieces and start and end and move start piece to end location*)
+      Map.remove (Map.remove board start) dest |> Map.add_exn ~key:dest ~data:start_piece
+
+  
+  (*Returns all possible moves for a given color*)
+  let valid_moves_color (board : t) (c : Lib.color) : movement list =
+    (*List fold over valid_moves_color_no_check where it just makes the hypothetical move and sees in the board is in check then*)
+    List.fold (valid_moves_color_no_check board c) ~init:[] ~f:(fun accum ele -> if in_check (move board ele.start ele.dest) c then accum else ele :: accum)
+
+  let in_checkmate (board : t) (c : Lib.color) : bool =
+    List.length (valid_moves_color board c) = 0 && in_check board c
+  
 end

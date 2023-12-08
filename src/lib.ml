@@ -1,7 +1,7 @@
 open Core
 
 type color = Black | White [@@deriving equal]
-type position_key = { x : int; y : int } [@@deriving compare, sexp]
+type position_key = { x : int; y : int } [@@deriving compare, sexp, equal]
 
 module type Piece = sig
   val in_bounds : position_key -> bool
