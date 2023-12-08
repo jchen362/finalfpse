@@ -134,7 +134,7 @@ module Board_state = struct
     String.concat ~sep:"/" ranks
   (* TODO: for now only handling positions *)
 
-  let default_board : t =
+  (*let default_board : t =
     let white_positions =
       [
         ({ x = 0; y = 0 }, white_rook);
@@ -173,6 +173,48 @@ module Board_state = struct
         ({ x = 5; y = 6 }, black_pawn);
         ({ x = 6; y = 6 }, black_pawn);
         ({ x = 7; y = 6 }, black_pawn);
+      ]
+    in
+    Position_map.of_alist_exn (white_positions @ black_positions)*)
+let default_board : t =
+    let white_positions =
+      [
+        ({ x = 0; y = 7 }, white_rook);
+        ({ x = 1; y = 7 }, white_knight);
+        ({ x = 2; y = 7 }, white_bishop);
+        ({ x = 3; y = 7 }, white_queen);
+        ({ x = 4; y = 7 }, white_king);
+        ({ x = 5; y = 7 }, white_bishop);
+        ({ x = 6; y = 7 }, white_knight);
+        ({ x = 7; y = 7 }, white_rook);
+        ({ x = 0; y = 6 }, white_pawn);
+        ({ x = 1; y = 6 }, white_pawn);
+        ({ x = 2; y = 6 }, white_pawn);
+        ({ x = 3; y = 6 }, white_pawn);
+        ({ x = 4; y = 6 }, white_pawn);
+        ({ x = 5; y = 6 }, white_pawn);
+        ({ x = 6; y = 6 }, white_pawn);
+        ({ x = 7; y = 6 }, white_pawn);
+      ]
+    in
+    let black_positions =
+      [
+        ({ x = 0; y = 0 }, black_rook);
+        ({ x = 1; y = 0 }, black_knight);
+        ({ x = 2; y = 0 }, black_bishop);
+        ({ x = 3; y = 0 }, black_queen);
+        ({ x = 4; y = 0 }, black_king);
+        ({ x = 5; y = 0 }, black_bishop);
+        ({ x = 6; y = 0 }, black_knight);
+        ({ x = 7; y = 0 }, black_rook);
+        ({ x = 0; y = 1 }, black_pawn);
+        ({ x = 1; y = 1 }, black_pawn);
+        ({ x = 2; y = 1 }, black_pawn);
+        ({ x = 3; y = 1 }, black_pawn);
+        ({ x = 4; y = 1 }, black_pawn);
+        ({ x = 5; y = 1 }, black_pawn);
+        ({ x = 6; y = 1 }, black_pawn);
+        ({ x = 7; y = 1 }, black_pawn);
       ]
     in
     Position_map.of_alist_exn (white_positions @ black_positions)
