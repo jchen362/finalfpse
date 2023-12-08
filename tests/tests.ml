@@ -270,9 +270,11 @@ let piece_tests =
 
 let default_board = Board_state.default_board
 let default_white_pawn_2 = {x = 1; y = 1}
-let default_left_rook = {x = 0; y = 7}
-let default_left_knight = {x = 1; y = 7}
-let default_left_bishop = {x = 2; y = 7}
+let default_white_left_rook = {x = 0; y = 7}
+let default_white_left_knight = {x = 1; y = 7}
+let default_white_left_bishop = {x = 2; y = 7}
+let default_white_queen = {x = 3; y = 7}
+let default_white_king = {x = 4; y = 7}
 
 let test_valid_move_pawn _ =
   assert_equal false @@ (Board_state.valid_move default_board default_white_pawn_2 {x = 2; y = 2});
@@ -281,24 +283,38 @@ let test_valid_move_pawn _ =
   assert_equal true @@ (Board_state.valid_move default_board default_white_pawn_2 {x = 1; y = 3})
 
 let test_valid_move_rook _ =
-  assert_equal false @@ (Board_state.valid_move default_board default_left_rook {x = 1; y = 7});
-  assert_equal false @@ (Board_state.valid_move default_board default_left_rook {x = 2; y = 7});
-  assert_equal false @@ (Board_state.valid_move default_board default_left_rook {x = 0; y = 6});
-  assert_equal false @@ (Board_state.valid_move default_board default_left_rook {x = 0; y = 5})
+  assert_equal false @@ (Board_state.valid_move default_board default_white_left_rook {x = 1; y = 7});
+  assert_equal false @@ (Board_state.valid_move default_board default_white_left_rook {x = 2; y = 7});
+  assert_equal false @@ (Board_state.valid_move default_board default_white_left_rook {x = 0; y = 6});
+  assert_equal false @@ (Board_state.valid_move default_board default_white_left_rook {x = 0; y = 5})
 
 let test_valid_move_knight _ =
-  assert_equal false @@ (Board_state.valid_move default_board default_left_knight {x = 3; y = 6});
-  assert_equal true @@ (Board_state.valid_move default_board default_left_knight {x = 2; y = 5})
+  assert_equal false @@ (Board_state.valid_move default_board default_white_left_knight {x = 3; y = 6});
+  assert_equal true @@ (Board_state.valid_move default_board default_white_left_knight {x = 2; y = 5})
 
 let test_valid_move_bishop _ =
-  assert_equal false @@ (Board_state.valid_move default_board default_left_bishop {x = 3; y = 6});
-  assert_equal false @@ (Board_state.valid_move default_board default_left_bishop {x = 4; y = 5})
+  assert_equal false @@ (Board_state.valid_move default_board default_white_left_bishop {x = 3; y = 6});
+  assert_equal false @@ (Board_state.valid_move default_board default_white_left_bishop {x = 4; y = 5})
+
+let test_valid_move_queen _ =
+  assert_equal false @@ (Board_state.valid_move default_board default_white_queen {x = 3; y = 4});
+  assert_equal false @@ (Board_state.valid_move default_board default_white_queen {x = 1; y = 7});
+  assert_equal false @@ (Board_state.valid_move default_board default_white_queen {x = 1; y = 5})
+
+(*let test_valid_move_king _ =
+  assert_equal false @@ (Board_state.valid_move default_board default_white_king {x = 3; y = 7});
+  assert_equal false @@ (Board_state.valid_move default_board default_white_king {x = 5; y = 7});
+  assert_equal false @@ (Board_state.valid_move default_board default_white_king {x = 4; y = 6});
+  assert_equal false @@ (Board_state.valid_move default_board default_white_king {x = 3; y = 6});
+  assert_equal false @@ (Board_state.valid_move default_board default_white_king {x = 5; y = 6})*)
 
 let board_tests = "board tests" >: test_list [
   "test_valid_move_pawn"      >:: test_valid_move_pawn;
   "test_valid_move_rook"      >:: test_valid_move_rook;
   "test_valid_move_knight"    >:: test_valid_move_knight;
   "test_valid_move_bishop"    >:: test_valid_move_bishop;
+  "test_valid_move_queen"     >:: test_valid_move_queen;
+  (*"test_valid_move_king"      >:: test_valid_move_king;*)
 ]
 
 let series = "chess tests" >::: [ piece_tests; board_tests ]
