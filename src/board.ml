@@ -366,7 +366,6 @@ module Board_state = struct
     in
     (*Finds if there is a valid move the king position by seeing if valid_moves_color gives a valid_move to king position*)
     valid_moves_color_no_check board opposite_color |> List.fold ~init:false ~f:(fun accum move -> if pos_equal move.dest king_pos then true else accum)
-  let in_checkmate (board : t) (c : Lib.color) : bool = false
   let in_stalemate (board : t) (c : Lib.color) : bool = false
 
   let move (board : t) (start : Lib.position_key) (dest : Lib.position_key) : t =
@@ -382,5 +381,8 @@ module Board_state = struct
   let valid_moves_color (board : t) (c : Lib.color) : movement list =
     (*List fold over valid_moves_color_no_check where it just makes the hypothetical move and sees in the board is in check then*)
     List.fold (valid_moves_color_no_check board c) ~init:[] ~f:(fun accum ele -> if in_check (move board ele.start ele.dest) c then accum else ele :: accum)
+
+  let in_checkmate (board : t) (c : Lib.color) : bool =
+    List.length (valid_moves_color board c) = 0 && in_check board c
   
 end
