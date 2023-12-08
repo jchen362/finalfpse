@@ -17,6 +17,10 @@ dune build
 dune exec ./src/server.exe
 ```
 
+Navigate to `localhost:8080` on your browser to view the app.
+
+(For the code checkpoint, we have implemented the visualization of the chessboard using Dream)
+
 Now information can be retrieved based on the following API endpoints:
 
 `/get-suggested-moves/{board}/{difficulty}`
