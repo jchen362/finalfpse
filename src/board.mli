@@ -60,5 +60,5 @@ module Board_state : sig
   val pos_to_alg : position_key * position_key -> string
 
   (* takes in board state, start and end position, returns option saying move was successfully made and board state *)
-  val move : t -> position_key -> position_key -> t option
+  val move : t -> position_key -> position_key -> t 
 end
