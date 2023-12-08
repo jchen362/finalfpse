@@ -433,6 +433,7 @@ let board_tests =
          "test_valid_move_rook" >:: test_valid_move_rook;
          "test_valid_moves_piece" >:: test_valid_moves_piece;
          "test_check" >:: test_check;
+         "test_checkmate" >:: test_checkmate;
        ]
 
 let series = "chess tests" >::: [ piece_tests; board_io_tests; board_tests ]
