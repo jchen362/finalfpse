@@ -271,7 +271,8 @@ module Knight : Piece = struct
   (* sees if you can move a piece from start to end position DOES NOT ACCOUNT FOR ACTUAL BOARD STATE *)
   let can_move (start : position_key) (dest : position_key) (curr_color : color)
       : bool =
-    if abs (start.x - dest.x) = 2 && abs (start.y - dest.y) = 1 then true
+    if not (in_bounds dest) then false
+    else if abs (start.x - dest.x) = 2 && abs (start.y - dest.y) = 1 then true
     else if abs (start.x - dest.x) = 1 && abs (start.y - dest.y) = 2 then true
     else match curr_color with _ -> true
 
@@ -291,6 +292,11 @@ module Knight : Piece = struct
   let generate_moves (start : position_key) (c : color) : position_key list =
     match c with
     | _ ->
-        List.map knight_dirs ~f:(fun dir ->
-            { x = start.x + dir.x; y = start.y + dir.y })
+        List.fold knight_dirs ~init:[] ~f:(fun accum dir ->
+            let potential_move = { x = start.x + dir.x; y = start.y + dir.y }
+            in
+            if in_bounds potential_move then potential_move :: accum
+            else accum
+            )
+
 end
