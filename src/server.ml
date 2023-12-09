@@ -1,16 +1,37 @@
-(* open Core
+(* let () =
+  Dream.run @@ Dream.logger
+  @@ Dream.router
+       [
+         Dream.get "/" (fun request ->
+             Template.default_board request |> Dream.html);
+         Dream.post "/" (fun request ->
+             match%lwt Dream.form request with
+             | `Ok [ ("my.field", _) ] ->
+                 Template.default_board request |> Dream.html
+             | _ -> Dream.empty `Bad_Request);
+         Dream.get "/app/**" (Dream.static "./app");
+       ] *)
+(* @@ Dream.not_found *)
 
-let home _ =
-  Dream.html
-    (Dream.page "Chess Board"
-       ~meta:[ Dream.head_link ~rel:`Stylesheet ~href:"/styles.css" () ]
-       (Dream.body
-          [ Dream.h1 [ Dream.txt "Chess Board" ];
-            Dream.p [ Dream.txt "Your chess board goes here." ] ]))
 
 let () =
   Dream.run
   @@ Dream.logger
   @@ Dream.memory_sessions
-  @@ Dream.router
-       [ Dream.get "/" home ] *)
+  @@ Dream.router [
+
+    Dream.get  "/"
+      (fun request ->
+        Dream.html (Template.default_board request));
+
+    Dream.post "/"
+      (fun request ->
+        match%lwt Dream.form request with
+        | `Ok ["message", message] ->
+          Dream.html (Template.default_board ~message request)
+        | _ ->
+          Dream.empty `Bad_Request);
+
+    Dream.get "/app/**" (Dream.static "./app");
+
+  ]
