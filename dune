@@ -1,15 +1,18 @@
 (rule
-  (target chess_ai.zip)
-  (deps 
-   src/lib.ml
-   src/lib.mli
-   src/chess_ai.ml
-   src/chess_ai.mli
-   src/server_lib.ml
-   src/server_lib.mli
-   src/server.ml
-   src/board.mli
-   src/board.ml
-  )
-  (action
-    (run zip -R chess_ai.zip %{deps})))
+ (target chess_ai.zip)
+ (deps
+  src/lib.ml
+  src/lib.mli
+  src/chess_ai.ml
+  src/chess_ai.mli
+  src/server_lib.ml
+  src/server_lib.mli
+  src/server.ml
+  src/template.eml.ml
+  src/board.mli
+  src/board.ml
+  src/dune
+  tests/tests.ml
+  tests/dune)
+ (action
+  (run zip -R chess_ai.zip %{deps})))
