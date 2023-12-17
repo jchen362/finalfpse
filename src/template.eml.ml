@@ -20,7 +20,7 @@ let default_board ?message request =
     </form>
   </div>
 
-  <script src="app/script.js"></script>
+  <script type="module" src="app/Index.bs.js"></script>
 
   </body>
   </html>

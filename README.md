@@ -9,6 +9,19 @@ Packages used in this project can be found in the `chess_ai.opam` file. To insta
 * Yojson
 and their dependencies.
 
+For ReScript, the list of depth 0 dependencies are:
+* @rescript/react@0.11.0
+* react-dom@18.2.0
+* react@18.2.0
+* rescript-webapi@0.9.0
+* rescript@10.1.4
+
+Install Node.js and npm from [here](https://nodejs.org/en). Install the dependencies using
+```
+npm install
+```
+
+
 # Usage
 To run the Chess AI, run the following commands to start the server:
 
