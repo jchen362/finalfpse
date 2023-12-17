@@ -18,22 +18,3 @@
  (libraries core lib board)
  (preprocess
   (pps ppx_jane bisect_ppx)))
-
-(library
- (name server_lib)
- (modules server_lib)
- (libraries core chess_ai dream))
-
-(executable
- (name server)
- (public_name server)
- (modules server template)
- (libraries core dream lwt)
- (preprocess
-  (pps lwt_ppx)))
-
-(rule
- (targets template.ml)
- (deps template.eml.ml)
- (action
-  (run dream_eml %{deps} --workspace %{workspace_root})))

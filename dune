@@ -5,13 +5,14 @@
   src/lib.mli
   src/chess_ai.ml
   src/chess_ai.mli
-  src/server_lib.ml
-  src/server_lib.mli
-  src/server.ml
-  src/template.eml.ml
   src/board.mli
   src/board.ml
   src/dune
+  server/server_lib.ml
+  server/server_lib.mli
+  server/server.ml
+  server/template.eml.ml
+  server/dune
   tests/tests.ml
   tests/dune)
  (action
