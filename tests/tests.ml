@@ -411,36 +411,264 @@ let test_valid_moves_piece _ =
     |> List.length >= 0)
     true
 
-let test_check _ = (
+let test_board_move _ =
+  (*Move pawn forward by 1*)
+  assert_equal
+    (Board_state.move
+       (Board_state.import "3k4/8/8/8/8/8/3P4/3K4" |> Option.value_exn)
+       { x = 3; y = 6 } { x = 3; y = 5 }
+    |> Board_state.export)
+    "3k4/8/8/8/8/3P4/8/3K4";
+  (*Invalid movement out of bounds*)
+  assert_equal
+    (Board_state.move
+       (Board_state.import "3k4/8/8/8/8/8/3P4/3K4" |> Option.value_exn)
+       { x = 3; y = 6 } { x = 3; y = -5 }
+    |> Board_state.export)
+    "3k4/8/8/8/8/8/3P4/3K4";
+  (*Pawn promotion*)
+  assert_equal
+    (Board_state.move
+       (Board_state.import "3k4/7P/8/8/8/8/8/3K4" |> Option.value_exn)
+       { x = 7; y = 1 } { x = 7; y = 0 }
+    |> Board_state.export)
+    "3k3Q/8/8/8/8/8/8/3K4"
+
+let test_check _ =
   assert_equal (Board_state.in_check default_board Black) false;
   assert_equal (Board_state.in_check default_board White) false;
   (*Queen trying to capture king, but knight can block*)
-  assert_equal (Board_state.in_check ("rnb1kbnr/pppp1ppp/3Q4/4p3/4q3/8/PPPP1PPP/RNB1KBNR" |> Board_state.import |> Option.value_exn) White) true;
+  assert_equal
+    (Board_state.in_check
+       ("rnb1kbnr/pppp1ppp/3Q4/4p3/4q3/8/PPPP1PPP/RNB1KBNR"
+      |> Board_state.import |> Option.value_exn)
+       White)
+    true;
   (*Two rooks putting black king in checkmate*)
-  assert_equal (Board_state.in_check ("k7/8/8/8/8/8/RR6/3K4" |> Board_state.import |> Option.value_exn) Black) true;
-  assert_equal (Board_state.in_check ("k7/8/8/8/8/8/RR6/3K4" |> Board_state.import |> Option.value_exn) White) false;
+  assert_equal
+    (Board_state.in_check
+       ("k7/8/8/8/8/8/RR6/3K4" |> Board_state.import |> Option.value_exn)
+       Black)
+    true;
+  assert_equal
+    (Board_state.in_check
+       ("k7/8/8/8/8/8/RR6/3K4" |> Board_state.import |> Option.value_exn)
+       White)
+    false;
   (*Black king in corner with knight checking it checkmate*)
-  assert_equal (Board_state.in_check ("k7/1RR5/1N6/8/8/8/8/3K4" |> Board_state.import |> Option.value_exn) Black) true;
-  assert_equal (Board_state.in_check ("k7/1RR5/1N6/8/8/8/8/3K4" |> Board_state.import |> Option.value_exn) White) false;
+  assert_equal
+    (Board_state.in_check
+       ("k7/1RR5/1N6/8/8/8/8/3K4" |> Board_state.import |> Option.value_exn)
+       Black)
+    true;
+  assert_equal
+    (Board_state.in_check
+       ("k7/1RR5/1N6/8/8/8/8/3K4" |> Board_state.import |> Option.value_exn)
+       White)
+    false;
   (*Black king checked by bishop but not in checkmate*)
-  assert_equal (Board_state.in_check ("k7/6R1/8/3B4/8/8/8/3K4" |> Board_state.import |> Option.value_exn) Black) true;
+  assert_equal
+    (Board_state.in_check
+       ("k7/6R1/8/3B4/8/8/8/3K4" |> Board_state.import |> Option.value_exn)
+       Black)
+    true;
   (*Black king checked by pawn but not in checkmate*)
-  (*Does not work right now, has to do with import most likely*)
-  (*assert_equal (Board_state.in_check ("k7/1P4R1/8/8/8/8/8/3K4" |> Board_state.import |> Option.value_exn) Black) true;*)
-)
+  assert_equal
+    (Board_state.in_check
+       ("k7/1P4R1/8/8/8/8/8/3K4" |> Board_state.import |> Option.value_exn)
+       Black)
+    true;
+  (*White King in checkmate by black pawn*)
+  assert_equal
+    (Board_state.in_check
+       ("3kr3/8/8/8/8/2p5/rpp5/3K4" |> Board_state.import |> Option.value_exn)
+       White)
+    true;
 
-let test_checkmate _ = (
+  (*White King in checkmate by black knight*)
+  assert_equal
+    (Board_state.in_check
+       ("3kr3/8/8/8/8/1pp5/rp3n2/3K4" |> Board_state.import |> Option.value_exn)
+       White)
+    true;
+
+  (*White King in checkmate by black rook*)
+  assert_equal
+    (Board_state.in_check
+       ("3kr3/8/8/8/8/1pp5/rp6/3K3r" |> Board_state.import |> Option.value_exn)
+       White)
+    true;
+
+  (*White King in checkmate by black bishop*)
+  assert_equal
+    (Board_state.in_check
+       ("3kr3/8/8/7b/8/1pp5/rp6/3K4" |> Board_state.import |> Option.value_exn)
+       White)
+    true;
+
+  (*Black King in check and checkmate surrounded by black pieces white bishop checking it*)
+  assert_equal
+    (Board_state.in_check
+       ("kr6/pnN5/8/8/8/8/8/K7" |> Board_state.import |> Option.value_exn)
+       Black)
+    true
+
+let test_checkmate _ =
   assert_equal (Board_state.in_checkmate default_board Black) false;
   assert_equal (Board_state.in_checkmate default_board White) false;
   (*Queen trying to capture king, but knight can block*)
-  assert_equal (Board_state.in_checkmate ("rnb1kbnr/pppp1ppp/3Q4/4p3/4q3/8/PPPP1PPP/RNB1KBNR" |> Board_state.import |> Option.value_exn) White) false;
+  assert_equal
+    (Board_state.in_checkmate
+       ("rnb1kbnr/pppp1ppp/3Q4/4p3/4q3/8/PPPP1PPP/RNB1KBNR"
+      |> Board_state.import |> Option.value_exn)
+       White)
+    false;
   (*Two rooks putting black king in checkmate*)
-  assert_equal (Board_state.in_checkmate ("k7/8/8/8/8/8/RR6/3K4" |> Board_state.import |> Option.value_exn) Black) true;
-  assert_equal (Board_state.in_checkmate ("k7/8/8/8/8/8/RR6/3K4" |> Board_state.import |> Option.value_exn) White) false;
+  assert_equal
+    (Board_state.in_checkmate
+       ("k7/8/8/8/8/8/RR6/3K4" |> Board_state.import |> Option.value_exn)
+       Black)
+    true;
+  assert_equal
+    (Board_state.in_checkmate
+       ("k7/8/8/8/8/8/RR6/3K4" |> Board_state.import |> Option.value_exn)
+       White)
+    false;
   (*Black king in corner with knight checking it checkmate*)
-  assert_equal (Board_state.in_checkmate ("k7/1RR5/1N6/8/8/8/8/3K4" |> Board_state.import |> Option.value_exn) Black) true;
-  assert_equal (Board_state.in_checkmate ("k7/1RR5/1N6/8/8/8/8/3K4" |> Board_state.import |> Option.value_exn) White) false;
-)
+  assert_equal
+    (Board_state.in_checkmate
+       ("k7/1RR5/1N6/8/8/8/8/3K4" |> Board_state.import |> Option.value_exn)
+       Black)
+    true;
+  assert_equal
+    (Board_state.in_checkmate
+       ("k7/1RR5/1N6/8/8/8/8/3K4" |> Board_state.import |> Option.value_exn)
+       White)
+    false;
+  (*White King in checkmate by black pawn*)
+  assert_equal
+    (Board_state.in_checkmate
+       ("3kr3/8/8/8/8/2p5/rpp5/3K4" |> Board_state.import |> Option.value_exn)
+       White)
+    true;
+
+  assert_equal
+    (Board_state.in_checkmate
+       ("3kr3/8/8/8/8/2p5/rpp5/3K4" |> Board_state.import |> Option.value_exn)
+       Black)
+    false;
+
+  (*White King in checkmate by black knight*)
+  assert_equal
+    (Board_state.in_checkmate
+       ("3kr3/8/8/8/8/1pp5/rp3n2/3K4" |> Board_state.import |> Option.value_exn)
+       White)
+    true;
+
+  assert_equal
+    (Board_state.in_checkmate
+       ("3kr3/8/8/8/8/1pp5/rp3n2/3K4" |> Board_state.import |> Option.value_exn)
+       Black)
+    false;
+
+  (*White King in checkmate by black rook*)
+  assert_equal
+    (Board_state.in_checkmate
+       ("3kr3/8/8/8/8/1pp5/rp6/3K3r" |> Board_state.import |> Option.value_exn)
+       White)
+    true;
+
+  assert_equal
+    (Board_state.in_checkmate
+       ("3kr3/8/8/8/8/1pp5/rp6/3K3r" |> Board_state.import |> Option.value_exn)
+       Black)
+    false;
+
+  (*White King in checkmate by black bishop*)
+  assert_equal
+    (Board_state.in_checkmate
+       ("3kr3/8/8/7b/8/1pp5/rp6/3K4" |> Board_state.import |> Option.value_exn)
+       White)
+    true;
+
+  assert_equal
+    (Board_state.in_checkmate
+       ("3kr3/8/8/7b/8/1pp5/rp6/3K4" |> Board_state.import |> Option.value_exn)
+       Black)
+    false;
+
+  (*White king surrounded by pawns, not in checkmate so should be in stalemate*)
+  assert_equal
+    (Board_state.in_checkmate
+       ("3kr3/8/8/8/8/1pp5/rp6/3K4" |> Board_state.import |> Option.value_exn)
+       White)
+    false;
+
+  (*Black King in check and checkmate surrounded by black pieces white bishop checking it*)
+  assert_equal
+    (Board_state.in_checkmate
+       ("kr6/pnN5/8/8/8/8/8/K7" |> Board_state.import |> Option.value_exn)
+       Black)
+    true
+
+let test_stalemate _ =
+  assert_equal (Board_state.in_stalemate default_board Black) false;
+  assert_equal (Board_state.in_stalemate default_board White) false;
+
+  (*White king surrounded by pawns*)
+  assert_equal
+    (Board_state.in_stalemate
+       ("3kr3/8/8/8/8/1pp5/rp6/3K4" |> Board_state.import |> Option.value_exn)
+       White)
+    true;
+
+  (*White King in checkmate by black bishop, should not be in stalemate*)
+  assert_equal
+    (Board_state.in_stalemate
+       ("3kr3/8/8/7b/8/1pp5/rp6/3K4" |> Board_state.import |> Option.value_exn)
+       White)
+    false;
+
+  (*Black king checked by bishop but not in checkmate, should not be in stalemate*)
+  assert_equal
+    (Board_state.in_stalemate
+       ("k7/6R1/8/3B4/8/8/8/3K4" |> Board_state.import |> Option.value_exn)
+       Black)
+    false;
+
+  (*White King trapped by two black rooks, not in check but in stalemate*)
+  assert_equal
+    (Board_state.in_stalemate
+       ("3kr3/8/8/1r6/8/8/7r/K7" |> Board_state.import |> Option.value_exn)
+       White)
+    true;
+  assert_equal
+    (Board_state.in_stalemate
+       ("3kr3/8/8/1r6/8/8/7r/K7" |> Board_state.import |> Option.value_exn)
+       Black)
+    false;
+  (*White King trapped by pawn, rook, and knight, not in check but in stalemate*)
+  assert_equal
+    (Board_state.in_stalemate
+       ("3kr3/8/8/8/8/1pn5/7r/K7" |> Board_state.import |> Option.value_exn)
+       White)
+    true;
+  assert_equal
+    (Board_state.in_stalemate
+       ("3kr3/8/8/8/8/1pn5/7r/K7" |> Board_state.import |> Option.value_exn)
+       Black)
+    false;
+  (*Black King trapped by knight and queen, not in check but in stalemate*)
+  assert_equal
+    (Board_state.in_stalemate
+       ("k7/7Q/2N5/8/8/8/8/K7" |> Board_state.import |> Option.value_exn)
+       White)
+    false;
+  assert_equal
+    (Board_state.in_stalemate
+       ("k7/7Q/2N5/8/8/8/8/K7" |> Board_state.import |> Option.value_exn)
+       Black)
+    true
 
 let board_tests =
   "board tests"
@@ -455,8 +683,10 @@ let board_tests =
          "test_valid_moves_ls_pawn" >:: test_valid_moves_ls_pawn;
          "test_valid_move_rook" >:: test_valid_move_rook;
          "test_valid_moves_piece" >:: test_valid_moves_piece;
+         "test_board_move" >:: test_board_move;
          "test_check" >:: test_check;
          "test_checkmate" >:: test_checkmate;
+         "test_stalemate" >:: test_stalemate;
        ]
 
 let series = "chess tests" >::: [ piece_tests; board_io_tests; board_tests ]
