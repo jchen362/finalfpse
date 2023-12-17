@@ -19,4 +19,16 @@ _build/
 # VSCode files
 .vscode/
 
-node_modules/
+# Rescript files
+node_modules*
+.merlin
+.install
+lib/bs
+lib/bs/.*
+lib/js/
+lib/ocaml/
+*.log
+.bsb.lock
+_esy
+_build
+*.install
