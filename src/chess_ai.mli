@@ -10,7 +10,7 @@ module type Evaluation = sig
   val bishop_score : float array array
 
   (* returns a score for passed board state*)
-  val evaluate : Board.Board_state.t -> color -> int
+  val evaluate : Board.Board_state.t -> color -> float
 end
 
 module type Minimax = sig
@@ -24,5 +24,5 @@ module type Minimax = sig
   module Difficulty_map : Map.S
 
   (* generates the next move based on the difficulty provided *)
-  val generate_next_move : string -> int -> string
+  val generate_next_move : string -> char -> int -> string
 end
