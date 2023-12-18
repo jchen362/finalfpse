@@ -88,7 +88,7 @@ module Board_state = struct
       | [] -> Some acc
       | hd :: tl -> (
           match parse_rank (String.to_list hd) acc x y with
-          | Some board -> parse_fen_board_helper tl board x (y - 1)
+          | Some board -> parse_fen_board_helper tl board x (y + 1)
           | None -> None)
     in
     let ranks = String.split_on_chars ~on:[ '/' ] fen_board in
@@ -96,7 +96,7 @@ module Board_state = struct
 
   let import (str : string) : t option =
     match String.split_on_chars ~on:[ ' ' ] str with
-    | hd :: _ -> parse_fen_board hd Position_map.empty 0 7
+    | hd :: _ -> parse_fen_board hd Position_map.empty 0 0
     | [] -> None
   (* TODO: for now only handling positions *)
 
@@ -136,7 +136,7 @@ module Board_state = struct
     export_rank_helper board 0 x y [] |> List.rev |> String.of_char_list
 
   let export_ranks (board : t) : string list =
-    List.init 8 ~f:(fun y -> export_rank board 0 y) |> List.rev
+    List.init 8 ~f:(fun y -> export_rank board 0 y)
 
   let export (board : t) : string =
     let ranks = export_ranks board in
@@ -474,8 +474,6 @@ module Board_state = struct
     |> List.fold ~init:false ~f:(fun accum move ->
            if pos_equal move.dest king_pos then true else accum)
 
-  let in_stalemate (board : t) (c : Lib.color) : bool = false
-
   let move (board : t) (start : Lib.position_key) (dest : Lib.position_key) : t
       =
     if not (valid_move board start dest) then board
@@ -485,9 +483,9 @@ module Board_state = struct
       let piece_to_add =
       match start_piece.piece with
       | Pawn ->
-        if (matches_color start_piece.color Black) && (start.y = 7) then
+        if (matches_color start_piece.color Black) && (dest.y = 7) then
           black_queen
-        else if (matches_color start_piece.color White) && (start.y = 0) then
+        else if (matches_color start_piece.color White) && (dest.y = 0) then
           white_queen
         else
           start_piece
@@ -502,6 +500,9 @@ module Board_state = struct
     List.fold (valid_moves_color_no_check board c) ~init:[] ~f:(fun accum ele ->
         if in_check (move board ele.start ele.dest) c then accum
         else ele :: accum)
+
+
+  let in_stalemate (board : t) (c : Lib.color) : bool = List.length (valid_moves_color board c) = 0 && not (in_check board c)
 
   let in_checkmate (board : t) (c : Lib.color) : bool =
     List.length (valid_moves_color board c) = 0 && in_check board c
