@@ -20,6 +20,8 @@ module Board_state : sig
   (* exports a board state into string form *)
   val export : t -> string
 
+  val print_board : t -> unit
+
   (* default chess board state with no moved pieces *)
   val default_board : t
 

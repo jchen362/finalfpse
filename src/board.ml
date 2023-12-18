@@ -73,8 +73,12 @@ module Board_state = struct
         match hd with
         | '1' .. '8' ->
             let count = Char.to_int hd - Char.to_int '0' in
+            (* printf "%d" count; *)
             parse_rank tl acc (x + count) y
-        | _ -> add_piece tl acc x y (parse_piece hd))
+        | _ ->
+            (* (printf "%c"
+            @@ match parse_piece hd with Some piece -> piece | None -> hd); *)
+            add_piece tl acc x y (parse_piece hd))
 
   let parse_fen_board (fen_board : string) (acc : t) (x : int) (y : int) :
       t option =
@@ -138,6 +142,21 @@ module Board_state = struct
     let ranks = export_ranks board in
     String.concat ~sep:"/" ranks
   (* TODO: for now only handling positions *)
+
+  let print_board (board : t) : unit =
+    let print_row (y : int) : unit =
+      for x = 0 to 7 do
+        let pos = { x; y } in
+        let piece = Map.find board pos in
+        match piece with
+        | None -> printf " "
+        | Some piece -> printf "%c" (export_piece piece)
+      done;
+      printf "\n"
+    in
+    for y = 0 to 7 do
+      print_row y
+    done
 
   (*let default_board : t =
     let white_positions =
