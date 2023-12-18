@@ -548,14 +548,14 @@ let test_checkmate _ =
     false;
   (*White King in checkmate by black pawn*)
   assert_equal
-    (Board_state.in_checkmate
-       ("3kr3/8/8/8/8/2p5/rpp5/3K4" |> Board_state.import |> Option.value_exn)
+    (Board_state.in_check
+       ("3kr3/8/8/8/8/1pp5/rpp5/3K4" |> Board_state.import |> Option.value_exn)
        White)
     true;
-
+  
   assert_equal
     (Board_state.in_checkmate
-       ("3kr3/8/8/8/8/2p5/rpp5/3K4" |> Board_state.import |> Option.value_exn)
+       ("3kr3/8/8/8/8/1pp5/rpp5/3K4" |> Board_state.import |> Option.value_exn)
        Black)
     false;
 
@@ -686,7 +686,7 @@ let board_tests =
          "test_valid_moves_piece" >:: test_valid_moves_piece;
          "test_board_move" >:: test_board_move;
          "test_check" >:: test_check;
-         (*"test_checkmate" >:: test_checkmate;*)
+         "test_checkmate" >:: test_checkmate;
          "test_stalemate" >:: test_stalemate;
        ]
 
