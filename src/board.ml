@@ -371,8 +371,11 @@ module Board_state = struct
   let valid_move_pawn (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     match aux_get_move_direction start dest with
-    | Vertical -> can_move_vertical board start dest
-    | Horizontal -> can_move_horizontal board start dest
+    | Vertical -> (
+        match Map.find board dest with
+          | None -> can_move_vertical board start dest
+          | Some _ -> false)
+    | Horizontal -> false
     | Diagonal -> (
         match Map.find board dest with
         | None -> false
