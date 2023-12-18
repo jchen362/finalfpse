@@ -2,6 +2,7 @@ open Core
 open OUnit2
 open Board
 open Lib
+open Chess_ai
 
 [@@@ocaml.warning "-32"]
 (* type position_key = {x : int; y : int} [@@deriving compare, sexp] *)
@@ -459,5 +460,21 @@ let board_tests =
          "test_checkmate" >:: test_checkmate;
        ]
 
-let series = "chess tests" >::: [ piece_tests; board_io_tests; board_tests ]
+let test_evaluation _ =
+  assert_equal 0.0 @@ Eval.evaluate (Board_state.default_board)
+
+let arabian_mate_fen = "7k/7R/5N2/8/8/8/8/8"
+let anastasias_mate_fen = "8/4N1pk/8/7R/8/8/8/8"
+let test_generate_next_move _ =
+  assert_equal arabian_mate_fen @@ (Minimax.generate_next_move arabian_mate_fen 'B' 1);
+  assert_equal anastasias_mate_fen @@ (Minimax.generate_next_move anastasias_mate_fen 'B' 1)
+
+let chess_ai_tests =
+  "chess ai tests" >: test_list
+    [
+      "test_evaluation"             >:: test_evaluation;
+      "test_generate_next_move"     >:: test_generate_next_move
+    ]
+
+let series = "chess tests" >::: [ piece_tests; board_io_tests; board_tests; chess_ai_tests ]
 let () = run_test_tt_main series

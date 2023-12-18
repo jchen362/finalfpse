@@ -13,7 +13,7 @@ module type Evaluation = sig
   val bishop_score : float array array
 
   (* returns a score for passed board state*)
-  val evaluate : Board.Board_state.t -> color -> float
+  val evaluate : Board.Board_state.t -> float
 end
 
 module Eval : Evaluation = struct
@@ -89,7 +89,7 @@ module Eval : Evaluation = struct
     | Board.Black -> -1.
 
 
-  let evaluate (board : Board.Board_state.t) (curr_color : Lib.color) : float =
+  let evaluate (board : Board.Board_state.t) : float =
     let rec calculate_score (pos_keys : Lib.position_key list) : float =
       match pos_keys with
       | [] -> 0.0
@@ -118,8 +118,6 @@ end
 module type Minimax = sig
   include Evaluation
 
-  type alpha_beta = { alpha : float; beta : float }
-
   (* likely 5 levels of difficulty, each level has static alpha beta values to be used
      for pruning which essentially decides the depth of the search tree *)
   (* module Difficulty_map : Map.Make(Int); value is alpha_beta *)
@@ -129,21 +127,26 @@ module type Minimax = sig
   val generate_next_move : string -> char -> int -> string
 end
 
-module Minimax = struct
+module Minimax : Minimax = struct
   include Eval
-
-  type alpha_beta = { alpha : float; beta : float }
 
   (* likely 5 levels of difficulty, each level has static alpha beta values to be used
      for pruning which essentially decides the depth of the search tree *)
   (* module Difficulty_map : Map.Make(Int); value is alpha_beta *)
   (* module Difficulty_map : Map.S *)
   module Difficulty_map = Map.Make(Int)
-  let difficulty_map = Difficulty_map.empty |> Map.add_exn ~key:(1) ~data:({alpha = 10000.0; beta = -10000.0})
+
+  let org_alpha = 100000.0
+  let org_beta = -100000.0
+  let difficulty_map = 
+  Difficulty_map.empty 
+  |> Map.add_exn ~key:(1) ~data:(2) 
+  |> Map.add_exn ~key:(2) ~data:(3)
+  |> Map.add_exn ~key:(3) ~data:(4)
 
   let rec minimax (board : Board.Board_state.t) (depth : int) (maximizePlayer : bool) (curr_color : Lib.color) (alpha : float) (beta : float) : float =
     if depth = 0 then
-      evaluate board curr_color
+      Float.(-(evaluate board))
     else
       if maximizePlayer then
         let rec get_max_val (all_moves : Board.movement list) (max_val : float) (aux_alpha : float) : float =
@@ -195,10 +198,14 @@ module Minimax = struct
           else
             aux_generate_next_best_move rem_moves new_best_move max_val new_alpha
     in
-    let _, next_move = aux_generate_next_best_move (Board.Board_state.valid_moves_color board curr_color) Board.({start = {x = -1; y = -1}; dest = {x = -1; y = -1}}) Float.min_value alpha
-    in
-    (Board.Board_state.move board next_move.start next_move.dest)
-    |> Board.Board_state.export
+    let all_valid_moves = (Board.Board_state.valid_moves_color board curr_color) in
+    if (List.length all_valid_moves) = 0 then
+      Board.Board_state.export board
+    else
+      let _, next_move = aux_generate_next_best_move all_valid_moves Board.({start = {x = -1; y = -1}; dest = {x = -1; y = -1}}) Float.min_value alpha
+      in
+      (Board.Board_state.move board next_move.start next_move.dest)
+      |> Board.Board_state.export
 
   let convert_color (color_code : char) : Lib.color =
     if (Char.equal color_code 'B') then
@@ -213,6 +220,6 @@ module Minimax = struct
     | Some board_state ->
       match (Map.find difficulty_map difficulty) with
       | None -> start_board_str
-      | Some alpha_beta ->
-        generate_updated_board board_state (convert_color player_color) 2 alpha_beta.alpha alpha_beta.beta            
+      | Some depth ->
+        generate_updated_board board_state (convert_color player_color) depth org_alpha org_beta           
 end
