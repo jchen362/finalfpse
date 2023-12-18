@@ -56,7 +56,7 @@ module Board_state : sig
   (* gets all possible moves for given color *)
   (* It will repeatedly call  s_piece for each piece of the specified color*)
   (*Then minimax can call this function*)
-  val valid_moves_color : t -> color -> movement list
+  val valid_moves_color : t -> Lib.color -> movement list
 
   (* converts move from algebraic notation (e.g. Ke1) to pair of position_key *)
   val alg_to_pos : string -> (position_key * position_key) option
@@ -64,6 +64,13 @@ module Board_state : sig
   (* converts move from pair of position_key to algebraic notation (e.g. Ke1) *)
   val pos_to_alg : position_key * position_key -> string
 
-  (* takes in board state, start and end position, returns option saying move was successfully made and board state *)
-  val move : t -> position_key -> position_key -> t
+  (* takes in board state, start and end position, returns option saying move was successfully made and board state
+     this is where I check whether or not the move results in pawn promotion*)
+  val move : t -> Lib.position_key -> Lib.position_key -> t
+
+  val next_player : Lib.color -> Lib.color
+
+  val get_piece : t -> Lib.position_key -> map_value
+
+  val get_keys : t -> Lib.position_key list
 end
