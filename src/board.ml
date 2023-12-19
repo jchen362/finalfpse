@@ -92,7 +92,8 @@ module Board_state = struct
           | None -> None)
     in
     let ranks = String.split_on_chars ~on:[ '/' ] fen_board in
-    parse_fen_board_helper ranks acc x y
+    if List.length ranks <> 8 then None
+    else parse_fen_board_helper ranks acc x y
 
   let import (str : string) : t option =
     match String.split_on_chars ~on:[ ' ' ] str with

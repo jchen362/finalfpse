@@ -150,7 +150,6 @@ end
 
 module type Minimax = sig
   include Evaluation
-
   module Difficulty_map : Map.S
 
   (* generates the next move based on the difficulty provided *)
@@ -168,11 +167,10 @@ module Minimax : Minimax = struct
 
   let org_alpha = Float.min_value
   let org_beta = Float.max_value
-  let difficulty_map = 
-  Difficulty_map.empty 
-  |> Map.add_exn ~key:(1) ~data:(2) 
-  |> Map.add_exn ~key:(2) ~data:(3)
-  |> Map.add_exn ~key:(3) ~data:(4)
+
+  let difficulty_map =
+    Difficulty_map.empty |> Map.add_exn ~key:1 ~data:2
+    |> Map.add_exn ~key:2 ~data:3 |> Map.add_exn ~key:3 ~data:4
 
   let rec minimax (board : Board.Board_state.t) (depth : int)
       (maximizePlayer : bool) (curr_color : Lib.color) (alpha : float)
