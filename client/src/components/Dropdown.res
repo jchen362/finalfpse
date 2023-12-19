@@ -16,12 +16,14 @@ let make = (~items: array<dropdownItem>, ~placeholder="Select an option": string
     setIsOpen(prevIsOpen => !prevIsOpen)
   }
 
+  // Perform item selection actions
   let selectItem = text => {
     setSelectedItemText(_ => text)
     onSelect(_ => text)
     setIsOpen(_ => false)
   }
 
+  // Set dropdown class based on open state
   let dropdownClass = isOpen ? "block" : "hidden"
 
   // Render dropdown menu

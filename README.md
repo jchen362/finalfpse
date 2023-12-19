@@ -58,6 +58,8 @@ npm run res:build
 npm start
 ```
 
+Now go to [`http://localhost:5173/`](http://localhost:5173/?#) to access the frontend interface.
+
 # Implementation Order
 
 The order we planned to implement our Chess AI is as follows:

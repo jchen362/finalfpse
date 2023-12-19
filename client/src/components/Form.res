@@ -37,27 +37,32 @@ let make = () => {
       Js.Global.encodeURIComponent(difficultySelection)
 
     // Get move from server
+    // Uses fetch bindings from @glennsl/rescript-fetch
     let getMove = async (query: string) => {
       Js.log(fenBoard)
       let response = await Fetch.get(query)
       let status = response->Fetch.Response.status
       Js.log(status)
       if status == 200 {
+        // Handle valid response
         let text = await response->Fetch.Response.text
         setIsSubmitted(_ => true)
         setNextFenBoard(_ => text)
       } else {
+        // Handle error response
         let text = await response->Fetch.Response.text
         setErrorText(_ => text)
         setBadQuery(_ => true)
       }
     }
+    // Call getMove
     Js.log(getMove(endpoint ++ queryString))
   }
 
   // Render form
   <div>
     <form>
+      // Create inputs for the form
       <div className="flex items-center space-x-4">
         <Textbox value={fenBoard} placeholder="FEN board" onChange={setFenBoard} />
         <Dropdown
@@ -69,6 +74,7 @@ let make = () => {
           onSelect={setDifficultySelection}
         />
       </div>
+      // Create submit button
       <button
         type_="submit"
         className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -86,8 +92,10 @@ let make = () => {
           </div>
           {React.string("The new FEN is " ++ nextFenBoard ++ "")}
         </div>
+        // If the query is invalid, render error message
       : badQuery
       ? <div className="text-red-400"> {React.string("Error: " ++ errorText)} </div>
+      // If not submitted, render nothing
       : React.null}
   </div>
 }
