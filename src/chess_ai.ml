@@ -143,10 +143,6 @@ end
 
 module type Minimax = sig
   include Evaluation
-<<<<<<< HEAD
-=======
-
->>>>>>> 290157a (updating alpha beta values)
   module Difficulty_map : Map.S
 
   (* generates the next move based on the difficulty provided *)
