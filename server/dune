@@ -7,7 +7,7 @@
  (name server)
  (public_name server)
  (modules server template)
- (libraries core dream lwt)
+ (libraries core dream chess_ai)
  (preprocess
   (pps lwt_ppx)))
 

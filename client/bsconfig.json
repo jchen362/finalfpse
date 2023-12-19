@@ -1,8 +1,8 @@
 {
-  "name": "chess_ai",
+  "name": "client",
   "sources": [
     {
-      "dir": "app",
+      "dir": "src",
       "subdirs": true
     }
   ],
@@ -12,13 +12,15 @@
       "in-source": true
     }
   ],
-  "suffix": ".bs.js",
+  "suffix": ".bs.mjs",
   "bs-dependencies": [
     "@rescript/react",
-    "rescript-webapi"
+    "@rescript/core",
+    "@glennsl/rescript-fetch"
   ],
   "jsx": {
     "version": 4,
-    "mode": "classic"
-  }
+    "mode": "automatic"
+  },
+  "bsc-flags": ["-open RescriptCore"]
 }

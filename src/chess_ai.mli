@@ -26,3 +26,17 @@ module type Minimax = sig
   (* generates the next move based on the difficulty provided *)
   val generate_next_move : string -> char -> int -> string
 end
+
+module Minimax : sig
+  include Evaluation
+
+  type alpha_beta = { alpha : float; beta : float }
+
+  (* likely 5 levels of difficulty, each level has static alpha beta values to be used
+     for pruning which essentially decides the depth of the search tree *)
+  (* module Difficulty_map : Map.Make(Int); value is alpha_beta *)
+  module Difficulty_map : Map.S
+
+  (* generates the next move based on the difficulty provided *)
+  val generate_next_move : string -> char -> int -> string
+end
