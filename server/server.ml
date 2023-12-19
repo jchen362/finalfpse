@@ -60,6 +60,18 @@ let get_suggested_move : Dream.route =
           ~headers:[ ("Access-Control-Allow-Origin", "*") ]
           "Invalid board")
 
+let is_valid_board : Dream.route =
+  Dream.get "/is_valid_board" (fun request ->
+      let board = Dream.query request "board" in
+      if check_valid_board board then
+        Dream.json ~status:`OK
+          ~headers:[ ("Access-Control-Allow-Origin", "*") ]
+          "Valid board"
+      else
+        Dream.json ~status:`Bad_Request
+          ~headers:[ ("Access-Control-Allow-Origin", "*") ]
+          "Invalid board")
+
 let () =
   Dream.run @@ Dream.logger @@ Dream.memory_sessions
-  @@ Dream.router [ get_suggested_move ]
+  @@ Dream.router [ get_suggested_move; is_valid_board ]
