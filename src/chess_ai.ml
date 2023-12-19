@@ -89,9 +89,13 @@ module Eval : Evaluation = struct
       [| -2.0; -1.0; -1.0; -1.0; -1.0; -1.0; -1.0; -2.0 |];
     |]
 
+  (* it returns the row number to read from for getting piece score value.
+    The above tables are for white and need to be inverted for black, which essentially means (7-rank)*)
   let get_y (piece_color : Board.color) (y_cor : int) : int =
     match piece_color with Board.White -> y_cor | Board.Black -> 7 - y_cor
 
+  (* it is an auxilliary function - the piece scores are + for white and - for black
+     - based on color it gives +1 or -1 *)
   let get_multiplier (piece_color : Board.color) : float =
     match piece_color with Board.White -> 1. | Board.Black -> -1.
 
@@ -159,19 +163,20 @@ end
 module Minimax : Minimax = struct
   include Eval
 
-  (* likely 5 levels of difficulty, each level has static alpha beta values to be used
-     for pruning which essentially decides the depth of the search tree *)
-  (* module Difficulty_map : Map.Make(Int); value is alpha_beta *)
-  (* module Difficulty_map : Map.S *)
+  (* 3 levels of difficulty, each definining depth for minimax. The map contains difficulty to depth mapping
+    1 -> depth = 2, 2 -> depth 3, 3 -> depth 4*)
   module Difficulty_map = Map.Make (Int)
 
+  let difficulty_map =
+  Difficulty_map.empty |> Map.add_exn ~key:1 ~data:2
+  |> Map.add_exn ~key:2 ~data:3 |> Map.add_exn ~key:3 ~data:4
+
+  (* alpha value for alpha-beta pruning *)
   let org_alpha = Float.min_value
+  (* beta value for alpha-beta pruning *)
   let org_beta = Float.max_value
 
-  let difficulty_map =
-    Difficulty_map.empty |> Map.add_exn ~key:1 ~data:2
-    |> Map.add_exn ~key:2 ~data:3 |> Map.add_exn ~key:3 ~data:4
-
+  (* runs minimax on given board until the depth is reached *)
   let rec minimax (board : Board.Board_state.t) (depth : int)
       (maximizePlayer : bool) (curr_color : Lib.color) (alpha : float)
       (beta : float) : float =
@@ -221,6 +226,9 @@ module Minimax : Minimax = struct
         (Board.Board_state.valid_moves_color board curr_color)
         Float.max_value beta
 
+  (* this is for first level of minimax run, we store the corresponding best move along 
+    with the best score value. It takes a board state, player color and depth, and returns
+    the FEN string after performing minimax to find best move *)
   let generate_updated_board (board : Board.Board_state.t)
       (curr_color : Lib.color) (depth : int) (alpha : float) (beta : float) :
       string =
@@ -264,7 +272,9 @@ module Minimax : Minimax = struct
   let convert_color (color_code : char) : Lib.color =
     if Char.equal color_code 'B' then Lib.Black else Lib.White
 
-  (* generates the next move based on the difficulty provided *)
+  (* generates the next move based on the difficulty provided from the given FEN string.
+    It returns the FEN string after performing the best move (if any) otherwise it returns the
+    same FEN string back (does the same in case of any invalid input) *)
   let generate_next_move (start_board_str : string) (player_color : char)
       (difficulty : int) : string =
     match Board.Board_state.import start_board_str with
