@@ -8,10 +8,7 @@
   src/board.mli
   src/board.ml
   src/dune
-  server/server_lib.ml
-  server/server_lib.mli
   server/server.ml
-  server/template.eml.ml
   server/dune
   tests/tests.ml
   tests/dune)
