@@ -65,7 +65,7 @@ module Queen : Piece = struct
   let can_move (start : position_key) (dest : position_key) (curr_color : color)
       : bool =
     if not (in_bounds dest) then false
-    else if abs (start.x - dest.x) > 0 && abs(start.y - dest.y) = 0 then true
+    else if abs (start.x - dest.x) > 0 && abs (start.y - dest.y) = 0 then true
     else if abs (start.x - dest.x) = 0 && abs (start.y - dest.y) > 0 then true
     else if abs (start.x - dest.x) = abs (start.y - dest.y) then true
     else match curr_color with _ -> true
@@ -293,10 +293,6 @@ module Knight : Piece = struct
     match c with
     | _ ->
         List.fold knight_dirs ~init:[] ~f:(fun accum dir ->
-            let potential_move = { x = start.x + dir.x; y = start.y + dir.y }
-            in
-            if in_bounds potential_move then potential_move :: accum
-            else accum
-            )
-
+            let potential_move = { x = start.x + dir.x; y = start.y + dir.y } in
+            if in_bounds potential_move then potential_move :: accum else accum)
 end

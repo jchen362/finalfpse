@@ -16,8 +16,6 @@ let make = () => {
     {id: "1", text: "1"},
     {id: "2", text: "2"},
     {id: "3", text: "3"},
-    {id: "4", text: "4"},
-    {id: "5", text: "5"},
   ]
 
   // Upon submitting data, perform query
@@ -76,7 +74,9 @@ let make = () => {
             <img className="h-96 w-48" src={"./arrow.svg"} />
             <img className="h-96 w-96" src={"https://fen2image.chessvision.ai/" ++ nextFenBoard} />
           </div>
-          {React.string("The new FEN is " ++ nextFenBoard ++ ".")}
+          {fenBoard != nextFenBoard
+            ? {React.string("The new FEN is " ++ nextFenBoard ++ ".")}
+            : {React.string("Invalid FEN.")}}
         </div>
       : React.null}
   </div>

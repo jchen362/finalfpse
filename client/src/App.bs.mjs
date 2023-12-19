@@ -18,7 +18,7 @@ function App(props) {
                               className: "text-blue-600 hover:underline",
                               href: "https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation"
                             }),
-                        "), the color to move (white or black), and the AI difficulty level (1 to 5)."
+                        "), the color to move (white or black), and the AI difficulty level (1 to 3)."
                       ]
                     }),
                 JsxRuntime.jsx("br", {}),
@@ -26,7 +26,7 @@ function App(props) {
                       children: "The default board is rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR."
                     }),
                 JsxRuntime.jsx("p", {
-                      children: "Try this board: 5r2/8/1R6/ppk3p1/2N3P1/P4b2/1K6/5B2"
+                      children: "Try this board: 7k/3n1KRP/6P1/8/8/8/8/4r3 (White to move)"
                     }),
                 JsxRuntime.jsx("br", {}),
                 JsxRuntime.jsx("div", {

@@ -77,7 +77,7 @@ module Board_state = struct
             parse_rank tl acc (x + count) y
         | _ ->
             (* (printf "%c"
-            @@ match parse_piece hd with Some piece -> piece | None -> hd); *)
+               @@ match parse_piece hd with Some piece -> piece | None -> hd); *)
             add_piece tl acc x y (parse_piece hd))
 
   let parse_fen_board (fen_board : string) (acc : t) (x : int) (y : int) :
@@ -373,8 +373,8 @@ module Board_state = struct
     match aux_get_move_direction start dest with
     | Vertical -> (
         match Map.find board dest with
-          | None -> can_move_vertical board start dest
-          | Some _ -> false)
+        | None -> can_move_vertical board start dest
+        | Some _ -> false)
     | Horizontal -> false
     | Diagonal -> (
         match Map.find board dest with
@@ -481,15 +481,14 @@ module Board_state = struct
       let start_piece = Map.find board start |> Option.value_exn in
       (*remove pieces and start and end and move start piece to end location*)
       let piece_to_add =
-      match start_piece.piece with
-      | Pawn ->
-        if (matches_color start_piece.color Black) && (dest.y = 7) then
-          black_queen
-        else if (matches_color start_piece.color White) && (dest.y = 0) then
-          white_queen
-        else
-          start_piece
-      | _ -> start_piece
+        match start_piece.piece with
+        | Pawn ->
+            if matches_color start_piece.color Black && dest.y = 7 then
+              black_queen
+            else if matches_color start_piece.color White && dest.y = 0 then
+              white_queen
+            else start_piece
+        | _ -> start_piece
       in
       Map.remove (Map.remove board start) dest
       |> Map.add_exn ~key:dest ~data:piece_to_add
@@ -501,21 +500,17 @@ module Board_state = struct
         if in_check (move board ele.start ele.dest) c then accum
         else ele :: accum)
 
-
-  let in_stalemate (board : t) (c : Lib.color) : bool = List.length (valid_moves_color board c) = 0 && not (in_check board c)
+  let in_stalemate (board : t) (c : Lib.color) : bool =
+    List.length (valid_moves_color board c) = 0 && not (in_check board c)
 
   let in_checkmate (board : t) (c : Lib.color) : bool =
     List.length (valid_moves_color board c) = 0 && in_check board c
 
   let next_player (current_p : Lib.color) : Lib.color =
-    match current_p with
-    | White -> Black
-    | Black -> White
+    match current_p with White -> Black | Black -> White
 
   let get_piece (board : t) (pos_key : Lib.position_key) : map_value =
     Map.find_exn board pos_key
 
-  let get_keys (board : t) : Lib.position_key list =
-    Map.keys board
-
+  let get_keys (board : t) : Lib.position_key list = Map.keys board
 end

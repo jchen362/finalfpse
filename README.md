@@ -51,7 +51,12 @@ Return value: new board state in FEN string format
 
 To view the frontend, navigate to the client directory using `cd client`.
 
-Start the Rescript
+Start the Rescript server by running
+
+```
+npm run res:build
+npm start
+```
 
 # Implementation Order
 

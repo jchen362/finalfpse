@@ -7,11 +7,11 @@ let make = () => {
     <p>
       {React.string("Please input your current chessboard state (in ")}
       <a className="text-blue-600 hover:underline" href=fenLink> {React.string("FEN Format")} </a>
-      {React.string("), the color to move (white or black), and the AI difficulty level (1 to 5).")}
+      {React.string("), the color to move (white or black), and the AI difficulty level (1 to 3).")}
     </p>
     <br />
     <p> {React.string("The default board is rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR.")} </p>
-    <p> {React.string("Try this board: 5r2/8/1R6/ppk3p1/2N3P1/P4b2/1K6/5B2")} </p>
+    <p> {React.string("Try this board: 7k/3n1KRP/6P1/8/8/8/8/4r3 (White to move)")} </p>
     <br />
     <div className="flex">
       <Form />

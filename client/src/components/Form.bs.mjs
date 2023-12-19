@@ -51,14 +51,6 @@ function Form(props) {
     {
       id: "3",
       text: "3"
-    },
-    {
-      id: "4",
-      text: "4"
-    },
-    {
-      id: "5",
-      text: "5"
     }
   ];
   var handleSubmit = function ($$event) {
@@ -132,7 +124,7 @@ function Form(props) {
                                 ],
                                 className: "flex py-5"
                               }),
-                          "The new FEN is " + nextFenBoard + "."
+                          fenBoard !== nextFenBoard ? "The new FEN is " + nextFenBoard + "." : "Invalid FEN."
                         ]
                       }) : null
               ]
