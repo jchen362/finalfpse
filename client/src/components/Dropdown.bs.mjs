@@ -6,6 +6,7 @@ import * as Belt_Array from "rescript/lib/es6/belt_Array.js";
 import * as JsxRuntime from "react/jsx-runtime";
 
 function Dropdown(props) {
+  var onSelect = props.onSelect;
   var placeholder = props.placeholder;
   var placeholder$1 = placeholder !== undefined ? placeholder : "Select an option";
   var match = React.useState(function () {
@@ -38,6 +39,9 @@ function Dropdown(props) {
                                           onClick: (function (_event) {
                                               var text = item.text;
                                               Curry._1(setSelectedItemText, (function (param) {
+                                                      return text;
+                                                    }));
+                                              Curry._1(onSelect, (function (param) {
                                                       return text;
                                                     }));
                                               Curry._1(setIsOpen, (function (param) {

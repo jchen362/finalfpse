@@ -13,7 +13,9 @@ function Textbox(props) {
               type: "text",
               value: props.value,
               onChange: (function ($$event) {
-                  Curry._1(onChange, $$event.currentTarget.value);
+                  Curry._1(onChange, (function (param) {
+                          return $$event.currentTarget.value;
+                        }));
                 })
             });
 }

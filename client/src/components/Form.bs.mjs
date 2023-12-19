@@ -2,6 +2,7 @@
 
 import * as Curry from "rescript/lib/es6/curry.js";
 import * as React from "react";
+import * as Textbox from "./Textbox.bs.mjs";
 import * as Dropdown from "./Dropdown.bs.mjs";
 import * as JsxRuntime from "react/jsx-runtime";
 
@@ -9,22 +10,25 @@ function Form(props) {
   var match = React.useState(function () {
         return "";
       });
-  var setFenBoard = match[1];
   var fenBoard = match[0];
-  React.useState(function () {
-        return "";
-      });
-  React.useState(function () {
-        return "";
-      });
   var match$1 = React.useState(function () {
         return "";
       });
-  var setNextFenBoard = match$1[1];
+  var colorSelection = match$1[0];
   var match$2 = React.useState(function () {
+        return "";
+      });
+  var difficultySelection = match$2[0];
+  var match$3 = React.useState(function () {
+        return "";
+      });
+  var setNextFenBoard = match$3[1];
+  var nextFenBoard = match$3[0];
+  var match$4 = React.useState(function () {
         return false;
       });
-  var setIsSubmitted = match$2[1];
+  var setIsSubmitted = match$4[1];
+  var isSubmitted = match$4[0];
   var colorDropdownItems = [
     {
       id: "1",
@@ -59,27 +63,24 @@ function Form(props) {
   ];
   var handleSubmit = function ($$event) {
     $$event.preventDefault();
-    var endpoint = "http://localhost:8080/get_suggested_move?";
-    var queryString = "board=" + fenBoard + "&color=" + encodeURIComponent("W") + "&difficulty=" + encodeURIComponent("1");
-    Curry._1(setIsSubmitted, (function (param) {
-            return true;
-          }));
-    Curry._1(setNextFenBoard, (function (param) {
-            return "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR";
-          }));
-    console.log(endpoint + queryString);
+    var queryString = "board=" + encodeURIComponent(fenBoard) + "&color=" + encodeURIComponent(colorSelection) + "&difficulty=" + encodeURIComponent(difficultySelection);
     var getMove = async function (query) {
-      console.log("test");
       var response = await fetch(query);
-      console.log("test2");
-      var json = await response.json();
-      Curry._1(setNextFenBoard, (function (param) {
-              return JSON.stringify(json);
+      var text = await response.text();
+      Curry._1(setIsSubmitted, (function (param) {
+              if (isSubmitted) {
+                return true;
+              } else if (fenBoard !== "" && colorSelection !== "") {
+                return difficultySelection !== "";
+              } else {
+                return false;
+              }
             }));
-      console.log(JSON.stringify(json));
+      return Curry._1(setNextFenBoard, (function (param) {
+                    return text;
+                  }));
     };
-    var move = getMove(endpoint + queryString);
-    console.log(move);
+    console.log(getMove("http://localhost:8080/get_suggested_move?" + queryString));
   };
   return JsxRuntime.jsxs("div", {
               children: [
@@ -87,22 +88,19 @@ function Form(props) {
                       children: [
                         JsxRuntime.jsxs("div", {
                               children: [
-                                JsxRuntime.jsx("input", {
-                                      className: "border-2 border-gray-300 bg-white h-10 px-5 py-2 w-96 rounded-lg text-sm focus:outline-none",
-                                      placeholder: "FEN board",
-                                      type: "text",
+                                JsxRuntime.jsx(Textbox.make, {
                                       value: fenBoard,
-                                      onChange: (function ($$event) {
-                                          Curry._1(setFenBoard, $$event.currentTarget.value);
-                                        })
+                                      onChange: match[1]
                                     }),
                                 JsxRuntime.jsx(Dropdown.make, {
                                       items: colorDropdownItems,
-                                      placeholder: "Select a color"
+                                      placeholder: "Select a color",
+                                      onSelect: match$1[1]
                                     }),
                                 JsxRuntime.jsx(Dropdown.make, {
                                       items: difficultyDropdownItems,
-                                      placeholder: "Select a difficulty"
+                                      placeholder: "Select a difficulty",
+                                      onSelect: match$2[1]
                                     })
                               ],
                               className: "flex items-center space-x-4"
@@ -115,22 +113,27 @@ function Form(props) {
                       ],
                       onSubmit: handleSubmit
                     }),
-                match$2[0] ? JsxRuntime.jsxs("div", {
+                isSubmitted ? JsxRuntime.jsxs("div", {
                         children: [
-                          JsxRuntime.jsx("img", {
-                                className: "h-96 w-96",
-                                src: "https://fen2image.chessvision.ai/" + fenBoard
+                          JsxRuntime.jsxs("div", {
+                                children: [
+                                  JsxRuntime.jsx("img", {
+                                        className: "h-96 w-96",
+                                        src: "https://fen2image.chessvision.ai/" + fenBoard
+                                      }),
+                                  JsxRuntime.jsx("img", {
+                                        className: "h-96 w-48",
+                                        src: "./arrow.svg"
+                                      }),
+                                  JsxRuntime.jsx("img", {
+                                        className: "h-96 w-96",
+                                        src: "https://fen2image.chessvision.ai/" + nextFenBoard
+                                      })
+                                ],
+                                className: "flex py-5"
                               }),
-                          JsxRuntime.jsx("img", {
-                                className: "h-96 w-48",
-                                src: "./arrow.svg"
-                              }),
-                          JsxRuntime.jsx("img", {
-                                className: "h-96 w-96",
-                                src: "https://fen2image.chessvision.ai/" + match$1[0]
-                              })
-                        ],
-                        className: "flex py-5"
+                          "The new FEN is " + nextFenBoard + "."
+                        ]
                       }) : null
               ]
             });

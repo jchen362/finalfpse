@@ -7,5 +7,5 @@ type dropdownItem = {
 let make: (
   ~items: array<dropdownItem>,
   ~placeholder: string=?,
-) => // ~onSelect: string => unit,
-React.element
+  ~onSelect: (string => string) => unit,
+) => React.element

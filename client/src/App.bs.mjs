@@ -25,6 +25,9 @@ function App(props) {
                 JsxRuntime.jsx("p", {
                       children: "The default board is rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR."
                     }),
+                JsxRuntime.jsx("p", {
+                      children: "Try this board: 5r2/8/1R6/ppk3p1/2N3P1/P4b2/1K6/5B2"
+                    }),
                 JsxRuntime.jsx("br", {}),
                 JsxRuntime.jsx("div", {
                       children: JsxRuntime.jsx(Form.make, {}),

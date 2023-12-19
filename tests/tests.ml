@@ -552,7 +552,7 @@ let test_checkmate _ =
        ("3kr3/8/8/8/8/1pp5/rpp5/3K4" |> Board_state.import |> Option.value_exn)
        White)
     true;
-  
+
   assert_equal
     (Board_state.in_checkmate
        ("3kr3/8/8/8/8/1pp5/rpp5/3K4" |> Board_state.import |> Option.value_exn)
@@ -691,23 +691,31 @@ let board_tests =
        ]
 
 let test_evaluation _ =
-  assert_equal 0.0 @@ Eval.evaluate (Board_state.default_board)
+  assert_equal 0.0 @@ Eval.evaluate Board_state.default_board
 
 let arabian_mate_fen = "7k/7R/5N2/8/8/8/8/8"
 let anastasias_mate_fen = "8/4N1pk/8/7R/8/8/8/8"
 let one_valid_move = "7k/3n1KRP/6P1/8/8/8/8/4r3"
 let post_valid_move = "6Rk/3n1K1P/6P1/8/8/8/8/4r3"
+
 let test_generate_next_move _ =
-  assert_equal arabian_mate_fen @@ (Minimax.generate_next_move arabian_mate_fen 'B' 1);
-  assert_equal anastasias_mate_fen @@ (Minimax.generate_next_move anastasias_mate_fen 'B' 1);
-  assert_equal post_valid_move @@ (Minimax.generate_next_move one_valid_move 'W' 1)
+  assert_equal arabian_mate_fen
+  @@ Minimax.generate_next_move arabian_mate_fen 'B' 1;
+  assert_equal anastasias_mate_fen
+  @@ Minimax.generate_next_move anastasias_mate_fen 'B' 1;
+  assert_equal post_valid_move
+  @@ Minimax.generate_next_move one_valid_move 'W' 1
 
 let chess_ai_tests =
-  "chess ai tests" >: test_list
-    [
-      "test_evaluation"             >:: test_evaluation;
-      "test_generate_next_move"     >:: test_generate_next_move
-    ]
+  "chess ai tests"
+  >: test_list
+       [
+         "test_evaluation" >:: test_evaluation;
+         "test_generate_next_move" >:: test_generate_next_move;
+       ]
 
-let series = "chess tests" >::: [ piece_tests; board_io_tests; board_tests; chess_ai_tests ]
+let series =
+  "chess tests"
+  >::: [ piece_tests; board_io_tests; board_tests; chess_ai_tests ]
+
 let () = run_test_tt_main series
