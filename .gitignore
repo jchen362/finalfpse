@@ -12,6 +12,7 @@
 
 # ocamlbuild working directory
 _build/
+_coverage/
 
 # Dune generated files
 *.install

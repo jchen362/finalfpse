@@ -374,6 +374,12 @@ let test_valid_move_rook _ =
   assert_equal []
   @@ Board_state.valid_moves_piece default_board default_white_left_rook
 
+let test_valid_move_out_bounds _ =
+  assert_equal false
+  @@ Board_state.valid_move default_board {x = 4; y = 4} {x = 4; y = 5};
+  assert_equal false
+  @@ Board_state.valid_move default_board {x = 1; y = 0} {x = 1; y = 0}
+
 let int_gen = Int.gen_incl (-1000) 1000
 let random_x_pos = Quickcheck.random_value int_gen
 let random_y_pos = Quickcheck.random_value int_gen
@@ -684,6 +690,7 @@ let board_tests =
          "test_valid_moves_ls_pawn" >:: test_valid_moves_ls_pawn;
          "test_valid_move_rook" >:: test_valid_move_rook;
          "test_valid_moves_piece" >:: test_valid_moves_piece;
+         "test_valid_invalid_moves" >:: test_valid_move_out_bounds;
          "test_board_move" >:: test_board_move;
          "test_check" >:: test_check;
          "test_checkmate" >:: test_checkmate;

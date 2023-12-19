@@ -9,6 +9,7 @@ include Lib
 type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
 [@@deriving equal]
 
+(*Interal board representation is a map*)
 type map_value = { piece : piece_type; color : Lib.color }
 type movement = { start : Lib.position_key; dest : Lib.position_key }
 type move_direction = Vertical | Horizontal | Diagonal
