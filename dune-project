@@ -11,4 +11,4 @@
  (synopsis "An AI-based chess move suggester")
  (description
   "This package uses a minimax algorithm with alpha-beta pruning to suggest moves for a chess player given a starting board state.")
- (depends core ounit2 dream yojson uri))
+ (depends core ounit2 dream uri))

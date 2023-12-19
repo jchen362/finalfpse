@@ -10,7 +10,6 @@ depends: [
   "core"
   "ounit2"
   "dream"
-  "yojson"
   "uri"
   "odoc" {with-doc}
 ]

@@ -22,6 +22,10 @@ function App(props) {
                       ]
                     }),
                 JsxRuntime.jsx("br", {}),
+                JsxRuntime.jsx("h2", {
+                      children: "Sample boards:",
+                      className: "text-xl font-semibold"
+                    }),
                 JsxRuntime.jsx("p", {
                       children: "Default board: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR (White to move)"
                     }),
