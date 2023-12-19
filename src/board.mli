@@ -4,10 +4,9 @@ type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
 type color = Black | White
 type map_value = { piece : piece_type; color : color }
 type position_key = { x : int; y : int } [@@deriving compare, sexp]
-type movement = {start: Lib.position_key; dest: Lib.position_key}
+type movement = { start : Lib.position_key; dest : Lib.position_key }
 
 module Board_state : sig
-  
   (* board state is a map of positions to pieces *)
   module Position_map : Map.S
 
@@ -19,7 +18,6 @@ module Board_state : sig
 
   (* exports a board state into string form *)
   val export : t -> string
-
   val print_board : t -> unit
 
   (* default chess board state with no moved pieces *)
@@ -48,7 +46,7 @@ module Board_state : sig
   (* Remember, valid_moves_piece has to consider if moving the piece there causes a check*)
 
   (*Checks to see if it is a valid_move*)
-  val valid_move  : t -> Lib.position_key -> Lib.position_key -> bool
+  val valid_move : t -> Lib.position_key -> Lib.position_key -> bool
 
   (*To further modularize the code -> will have a valid_moves_[PIECE_TYPE] functions for each type of piece (ex: bishop, queen, king, etc)*)
   val valid_moves_piece : t -> Lib.position_key -> movement list
@@ -67,10 +65,7 @@ module Board_state : sig
   (* takes in board state, start and end position, returns option saying move was successfully made and board state
      this is where I check whether or not the move results in pawn promotion*)
   val move : t -> Lib.position_key -> Lib.position_key -> t
-
   val next_player : Lib.color -> Lib.color
-
   val get_piece : t -> Lib.position_key -> map_value
-
   val get_keys : t -> Lib.position_key list
 end
