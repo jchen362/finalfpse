@@ -691,7 +691,7 @@ let board_tests =
        ]
 
 let test_evaluation _ =
-  assert_equal 0.0 @@ Eval.evaluate Board_state.default_board
+  assert_equal 0.0 @@ Eval.evaluate Board_state.default_board Lib.White
 
 let arabian_mate_fen = "7k/7R/5N2/8/8/8/8/8"
 let anastasias_mate_fen = "8/4N1pk/8/7R/8/8/8/8"

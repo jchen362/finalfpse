@@ -31,11 +31,11 @@ module Board_state : sig
   *)
   (* checks if given board state is in check 
      *)
-  val in_check : t -> color -> bool
+  val in_check : t -> Lib.color -> bool
 
   (*Just going call valid_moves_piece to see if there are any valid moves -> if not then checkmate*)
   (* checks if given board state is in checkmate *)
-  val in_checkmate : t -> color -> bool
+  val in_checkmate : t -> Lib.color -> bool
 
   (* checks if given board state is in stalemate *)
   val in_stalemate : t -> color -> bool

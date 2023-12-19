@@ -13,7 +13,7 @@ module type Evaluation = sig
   val bishop_score : float array array
 
   (* returns a score for passed board state*)
-  val evaluate : Board.Board_state.t -> float
+  val evaluate : Board.Board_state.t -> Lib.color -> float
 end
 
 module Eval : Evaluation = struct
@@ -95,7 +95,7 @@ module Eval : Evaluation = struct
   let get_multiplier (piece_color : Board.color) : float =
     match piece_color with Board.White -> 1. | Board.Black -> -1.
 
-  let evaluate (board : Board.Board_state.t) : float =
+  let evaluate (board : Board.Board_state.t) (player_color : Lib.color) : float =
     let rec calculate_score (pos_keys : Lib.position_key list) : float =
       match pos_keys with
       | [] -> 0.0
@@ -138,7 +138,14 @@ module Eval : Evaluation = struct
             (get_multiplier curr_piece_info.color * abs_score)
             + calculate_score rem_keys)
     in
-    calculate_score (Board.Board_state.get_keys board)
+    let piece_square_score = calculate_score (Board.Board_state.get_keys board)
+    in
+    if (Board.Board_state.in_check board (Board.Board_state.next_player player_color)) then
+      Float.(10000. * piece_square_score)
+    else if (Board.Board_state.in_checkmate board (Board.Board_state.next_player player_color)) then
+      Float.max_value
+    else
+      piece_square_score
 end
 
 module type Minimax = sig
@@ -170,7 +177,7 @@ module Minimax : Minimax = struct
   let rec minimax (board : Board.Board_state.t) (depth : int)
       (maximizePlayer : bool) (curr_color : Lib.color) (alpha : float)
       (beta : float) : float =
-    if depth = 0 then Float.(-evaluate board)
+    if depth = 0 then Float.(-evaluate board curr_color)
     else if maximizePlayer then
       let rec get_max_val (all_moves : Board.movement list) (max_val : float)
           (aux_alpha : float) : float =

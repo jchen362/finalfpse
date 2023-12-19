@@ -9,7 +9,7 @@ module type Evaluation = sig
   val bishop_score : float array array
 
   (* returns a score for passed board state*)
-  val evaluate : Board.Board_state.t -> float
+  val evaluate : Board.Board_state.t -> Lib.color -> float
 end
 
 module Eval : Evaluation
