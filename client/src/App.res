@@ -10,8 +10,12 @@ let make = () => {
       {React.string("), the color to move (white or black), and the AI difficulty level (1 to 3).")}
     </p>
     <br />
-    <p> {React.string("The default board is rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR.")} </p>
-    <p> {React.string("Try this board: 7k/3n1KRP/6P1/8/8/8/8/4r3 (White to move)")} </p>
+    <p>
+      {React.string("Default board: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR (White to move)")}
+    </p>
+    <p>
+      {React.string("Board with one possible move: 7k/3n1KRP/6P1/8/8/8/8/4r3 (White to move)")}
+    </p>
     <br />
     <div className="flex">
       <Form />

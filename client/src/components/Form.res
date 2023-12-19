@@ -5,6 +5,8 @@ let make = () => {
   let (difficultySelection, setDifficultySelection) = React.useState(() => "")
   let (nextFenBoard, setNextFenBoard) = React.useState(() => "")
   let (isSubmitted, setIsSubmitted) = React.useState(() => false)
+  let (badQuery, setBadQuery) = React.useState(() => false)
+  let (errorText, setErrorText) = React.useState(() => "")
 
   // Set color dropdown
   let colorDropdownItems: array<Dropdown.dropdownItem> = [
@@ -20,7 +22,7 @@ let make = () => {
 
   // Upon submitting data, perform query
   let handleSubmit = event => {
-    ReactEvent.Form.preventDefault(event)
+    ReactEvent.Mouse.preventDefault(event)
 
     // GET endpoint on server
     let endpoint = "http://localhost:8080/get_suggested_move?"
@@ -36,21 +38,28 @@ let make = () => {
 
     // Get move from server
     let getMove = async (query: string) => {
+      Js.log(fenBoard)
       let response = await Fetch.get(query)
-      let text = await response->Fetch.Response.text
-      setIsSubmitted(_ =>
-        isSubmitted || (fenBoard != "" && colorSelection != "" && difficultySelection != "")
-      )
-      setNextFenBoard(_ => text)
+      let status = response->Fetch.Response.status
+      Js.log(status)
+      if status == 200 {
+        let text = await response->Fetch.Response.text
+        setIsSubmitted(_ => true)
+        setNextFenBoard(_ => text)
+      } else {
+        let text = await response->Fetch.Response.text
+        setErrorText(_ => text)
+        setBadQuery(_ => true)
+      }
     }
     Js.log(getMove(endpoint ++ queryString))
   }
 
   // Render form
   <div>
-    <form onSubmit={handleSubmit}>
+    <form>
       <div className="flex items-center space-x-4">
-        <Textbox value={fenBoard} onChange={setFenBoard} />
+        <Textbox value={fenBoard} placeholder="FEN board" onChange={setFenBoard} />
         <Dropdown
           items=colorDropdownItems placeholder="Select a color" onSelect={setColorSelection}
         />
@@ -62,7 +71,8 @@ let make = () => {
       </div>
       <button
         type_="submit"
-        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        onClick=handleSubmit>
         {React.string("Submit")}
       </button>
     </form>
@@ -74,10 +84,10 @@ let make = () => {
             <img className="h-96 w-48" src={"./arrow.svg"} />
             <img className="h-96 w-96" src={"https://fen2image.chessvision.ai/" ++ nextFenBoard} />
           </div>
-          {fenBoard != nextFenBoard
-            ? {React.string("The new FEN is " ++ nextFenBoard ++ ".")}
-            : {React.string("Invalid FEN.")}}
+          {React.string("The new FEN is " ++ nextFenBoard ++ "")}
         </div>
+      : badQuery
+      ? <div className="text-red-400"> {React.string("Error: " ++ errorText)} </div>
       : React.null}
   </div>
 }

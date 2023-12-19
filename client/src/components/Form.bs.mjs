@@ -28,7 +28,14 @@ function Form(props) {
         return false;
       });
   var setIsSubmitted = match$4[1];
-  var isSubmitted = match$4[0];
+  var match$5 = React.useState(function () {
+        return false;
+      });
+  var setBadQuery = match$5[1];
+  var match$6 = React.useState(function () {
+        return "";
+      });
+  var setErrorText = match$6[1];
   var colorDropdownItems = [
     {
       id: "1",
@@ -57,19 +64,25 @@ function Form(props) {
     $$event.preventDefault();
     var queryString = "board=" + encodeURIComponent(fenBoard) + "&color=" + encodeURIComponent(colorSelection) + "&difficulty=" + encodeURIComponent(difficultySelection);
     var getMove = async function (query) {
+      console.log(fenBoard);
       var response = await fetch(query);
-      var text = await response.text();
-      Curry._1(setIsSubmitted, (function (param) {
-              if (isSubmitted) {
+      var status = response.status;
+      console.log(status);
+      if (status === 200) {
+        var text = await response.text();
+        Curry._1(setIsSubmitted, (function (param) {
                 return true;
-              } else if (fenBoard !== "" && colorSelection !== "") {
-                return difficultySelection !== "";
-              } else {
-                return false;
-              }
+              }));
+        return Curry._1(setNextFenBoard, (function (param) {
+                      return text;
+                    }));
+      }
+      var text$1 = await response.text();
+      Curry._1(setErrorText, (function (param) {
+              return text$1;
             }));
-      return Curry._1(setNextFenBoard, (function (param) {
-                    return text;
+      return Curry._1(setBadQuery, (function (param) {
+                    return true;
                   }));
     };
     console.log(getMove("http://localhost:8080/get_suggested_move?" + queryString));
@@ -81,6 +94,7 @@ function Form(props) {
                         JsxRuntime.jsxs("div", {
                               children: [
                                 JsxRuntime.jsx(Textbox.make, {
+                                      placeholder: "FEN board",
                                       value: fenBoard,
                                       onChange: match[1]
                                     }),
@@ -100,12 +114,12 @@ function Form(props) {
                         JsxRuntime.jsx("button", {
                               children: "Submit",
                               className: "mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded",
-                              type: "submit"
+                              type: "submit",
+                              onClick: handleSubmit
                             })
-                      ],
-                      onSubmit: handleSubmit
+                      ]
                     }),
-                isSubmitted ? JsxRuntime.jsxs("div", {
+                match$4[0] ? JsxRuntime.jsxs("div", {
                         children: [
                           JsxRuntime.jsxs("div", {
                                 children: [
@@ -124,9 +138,14 @@ function Form(props) {
                                 ],
                                 className: "flex py-5"
                               }),
-                          fenBoard !== nextFenBoard ? "The new FEN is " + nextFenBoard + "." : "Invalid FEN."
+                          "The new FEN is " + nextFenBoard + ""
                         ]
-                      }) : null
+                      }) : (
+                    match$5[0] ? JsxRuntime.jsx("div", {
+                            children: "Error: " + match$6[0],
+                            className: "text-red-400"
+                          }) : null
+                  )
               ]
             });
 }
