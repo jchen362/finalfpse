@@ -11,6 +11,7 @@ depends: [
   "ounit2"
   "dream"
   "yojson"
+  "uri"
   "odoc" {with-doc}
 ]
 build: [

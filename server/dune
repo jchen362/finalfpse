@@ -1,0 +1,8 @@
+(executable
+ (name server)
+ (public_name server)
+ (modules server)
+ (libraries core dream chess_ai)
+ (preprocess
+  (pps lwt_ppx)))
+  
