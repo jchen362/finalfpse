@@ -143,10 +143,6 @@ end
 
 module type Minimax = sig
   include Evaluation
-
-  (* likely 5 levels of difficulty, each level has static alpha beta values to be used
-     for pruning which essentially decides the depth of the search tree *)
-  (* module Difficulty_map : Map.Make(Int); value is alpha_beta *)
   module Difficulty_map : Map.S
 
   (* generates the next move based on the difficulty provided *)
@@ -162,8 +158,8 @@ module Minimax : Minimax = struct
   (* module Difficulty_map : Map.S *)
   module Difficulty_map = Map.Make (Int)
 
-  let org_alpha = 100000.0
-  let org_beta = -100000.0
+  let org_alpha = Float.min_value
+  let org_beta = Float.max_value
 
   let difficulty_map =
     Difficulty_map.empty |> Map.add_exn ~key:1 ~data:2
