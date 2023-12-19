@@ -23,10 +23,10 @@ function App(props) {
                     }),
                 JsxRuntime.jsx("br", {}),
                 JsxRuntime.jsx("p", {
-                      children: "The default board is rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR."
+                      children: "Default board: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR (White to move)"
                     }),
                 JsxRuntime.jsx("p", {
-                      children: "Try this board: 7k/3n1KRP/6P1/8/8/8/8/4r3 (White to move)"
+                      children: "Board with one possible move: 7k/3n1KRP/6P1/8/8/8/8/4r3 (White to move)"
                     }),
                 JsxRuntime.jsx("br", {}),
                 JsxRuntime.jsx("div", {
