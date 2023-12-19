@@ -95,12 +95,13 @@ module Board_state = struct
     if List.length ranks <> 8 then None
     else parse_fen_board_helper ranks acc x y
 
+  (*FEN string to board*)
   let import (str : string) : t option =
     match String.split_on_chars ~on:[ ' ' ] str with
     | hd :: _ -> parse_fen_board hd Position_map.empty 0 0
     | [] -> None
-  (* TODO: for now only handling positions *)
 
+  (*Maps piece type to char for printing purposes*)
   let export_piece (piece : map_value) : char =
     match piece with
     | { piece = Pawn; color = White } -> 'P'
@@ -139,11 +140,12 @@ module Board_state = struct
   let export_ranks (board : t) : string list =
     List.init 8 ~f:(fun y -> export_rank board 0 y)
 
+  (*Get FEN string from board*)
   let export (board : t) : string =
     let ranks = export_ranks board in
     String.concat ~sep:"/" ranks
-  (* TODO: for now only handling positions *)
 
+  (*Print out the board in terminal*)
   let print_board (board : t) : unit =
     let print_row (y : int) : unit =
       for x = 0 to 7 do
@@ -159,48 +161,7 @@ module Board_state = struct
       print_row y
     done
 
-  (*let default_board : t =
-    let white_positions =
-      [
-        ({ x = 0; y = 0 }, white_rook);
-        ({ x = 1; y = 0 }, white_knight);
-        ({ x = 2; y = 0 }, white_bishop);
-        ({ x = 3; y = 0 }, white_queen);
-        ({ x = 4; y = 0 }, white_king);
-        ({ x = 5; y = 0 }, white_bishop);
-        ({ x = 6; y = 0 }, white_knight);
-        ({ x = 7; y = 0 }, white_rook);
-        ({ x = 0; y = 1 }, white_pawn);
-        ({ x = 1; y = 1 }, white_pawn);
-        ({ x = 2; y = 1 }, white_pawn);
-        ({ x = 3; y = 1 }, white_pawn);
-        ({ x = 4; y = 1 }, white_pawn);
-        ({ x = 5; y = 1 }, white_pawn);
-        ({ x = 6; y = 1 }, white_pawn);
-        ({ x = 7; y = 1 }, white_pawn);
-      ]
-    in
-    let black_positions =
-      [
-        ({ x = 0; y = 7 }, black_rook);
-        ({ x = 1; y = 7 }, black_knight);
-        ({ x = 2; y = 7 }, black_bishop);
-        ({ x = 3; y = 7 }, black_queen);
-        ({ x = 4; y = 7 }, black_king);
-        ({ x = 5; y = 7 }, black_bishop);
-        ({ x = 6; y = 7 }, black_knight);
-        ({ x = 7; y = 7 }, black_rook);
-        ({ x = 0; y = 6 }, black_pawn);
-        ({ x = 1; y = 6 }, black_pawn);
-        ({ x = 2; y = 6 }, black_pawn);
-        ({ x = 3; y = 6 }, black_pawn);
-        ({ x = 4; y = 6 }, black_pawn);
-        ({ x = 5; y = 6 }, black_pawn);
-        ({ x = 6; y = 6 }, black_pawn);
-        ({ x = 7; y = 6 }, black_pawn);
-      ]
-    in
-    Position_map.of_alist_exn (white_positions @ black_positions)*)
+  (*White side is at the bottom of the board*)
   let default_board : t =
     let white_positions =
       [
@@ -244,6 +205,7 @@ module Board_state = struct
     in
     Position_map.of_alist_exn (white_positions @ black_positions)
 
+  (*Helper function to check for diagonal, horizontal, and vertical movement for anything in between*)
   let rec aux_can_move (board_state : t) (start : Lib.position_key)
       (dest : Lib.position_key) (current : Lib.position_key)
       (multiplier : Lib.position_key) : bool =
@@ -263,6 +225,7 @@ module Board_state = struct
             multiplier
       | Some _ -> false
 
+  (*Helper function to check for pieces between vertical movement*)
   let can_move_vertical (board_state : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     if start.x = dest.x && start.y = dest.y then false
@@ -280,6 +243,7 @@ module Board_state = struct
         { x = start.x + multiplier.x; y = start.y + multiplier.y }
         multiplier
 
+  (*Helper function to check for pieces between horizontal movement*)
   let can_move_horizontal (board_state : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     if start.x = dest.x && start.y = dest.y then false
@@ -297,6 +261,7 @@ module Board_state = struct
         { x = start.x + multiplier.x; y = start.y + multiplier.y }
         multiplier
 
+  (*Helper function to check for pieces between diagonal movement*)
   let can_move_diagonal (board_state : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     if start.x = dest.x && start.y = dest.y then false
@@ -321,6 +286,7 @@ module Board_state = struct
         { x = start.x + multiplier.x; y = start.y + multiplier.y }
         multiplier
 
+  (*Helper function to check if a friendly piece is in the destination position*)
   let teammate_in_pos (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     let col = (Map.find_exn board start).color in
@@ -332,6 +298,7 @@ module Board_state = struct
         | Lib.White, Lib.White -> true
         | _, _ -> false)
 
+  (*Helper function that classifies the move direction as horizontal, vertical, or diagonal*)
   let aux_get_move_direction (start : position_key) (dest : position_key) :
       move_direction =
     let x_diff = abs (start.x - dest.x) in
@@ -340,11 +307,21 @@ module Board_state = struct
     else if x_diff > 0 && y_diff = 0 then Horizontal
     else Diagonal
 
+  (*
+    Helper function to check if a movement is a valid king movement
+    Assumptions:
+      This function is only called on movements from King.generate_moves
+  *)
   let valid_move_king (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     (*Teammate is already in destination*)
     if teammate_in_pos board start dest then false else true
 
+  (*
+    Helper function to check if a movement is a valid queen movement
+    Assumptions:
+      This function is only called on movements from King.generate_moves
+  *)
   let valid_move_queen (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     if (not (dest.x - start.x = 0)) && not (dest.y - start.y = 0) then
@@ -354,6 +331,12 @@ module Board_state = struct
     else if dest.x - start.x = 0 && dest.y - start.y = 0 then false
     else can_move_horizontal board start dest
 
+
+  (*
+    Helper function to check if a movement is a valid bishop movement
+    Assumptions:
+      This function is only called on movements from Bishop.generate_moves
+  *)
   let valid_move_bishop (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     match aux_get_move_direction start dest with
@@ -361,6 +344,12 @@ module Board_state = struct
     | Horizontal -> false
     | Diagonal -> can_move_diagonal board start dest
 
+
+  (*
+    Helper function to check if a movement is a valid knight movement
+    Assumptions:
+      This function is only called on movements from Knight.generate_moves
+  *)
   let valid_move_knight (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     match aux_get_move_direction start dest with
@@ -369,6 +358,12 @@ module Board_state = struct
     | Diagonal -> aux_can_move board start dest dest { x = 0; y = 0 }
   (* since knight can jump over pieces, we only need to check the piece on the destination position (if any) *)
 
+
+  (*
+    Helper function to check if a movement is a valid Pawn movement
+    Assumptions:
+      This function is only called on movements from Pawn.generate_moves
+  *)
   let valid_move_pawn (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     match aux_get_move_direction start dest with
@@ -382,6 +377,12 @@ module Board_state = struct
         | None -> false
         | Some _ -> can_move_diagonal board start dest)
 
+
+  (*
+    Helper function to check if a movement is a valid Rook movement
+    Assumptions:
+      This function is only called on movements from Rook.generate_moves
+  *)
   let valid_move_rook (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     match aux_get_move_direction start dest with
@@ -389,7 +390,10 @@ module Board_state = struct
     | Horizontal -> can_move_horizontal board start dest
     | Diagonal -> false
 
-  (*Checks to see if it is a valid_move*)
+  (*Checks to see if it is a valid_move
+    Assumptions:
+      This function is only called on movements from Piece.generate_moves
+  *)
   let valid_move (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     match Map.find board start with
@@ -450,11 +454,6 @@ module Board_state = struct
     Map.fold board ~init:[] ~f:(fun ~key ~data accum ->
         if matches_color data.color c then accum @ valid_moves_piece board key
         else accum)
-
-  let alg_to_pos (str : string) : (Lib.position_key * Lib.position_key) option =
-    None
-
-  let pos_to_alg (s : Lib.position_key * Lib.position_key) : string = "None"
 
   let pos_equal (a : Lib.position_key) (b : Lib.position_key) : bool =
     if a.x = b.x && a.y = b.y then true else false
