@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8"/>
     <title>chess_ai.ml &mdash; Coverage report</title>
-    <meta name="description" content="80.43% coverage in src/chess_ai.ml">
+    <meta name="description" content="81.52% coverage in src/chess_ai.ml">
     <link rel="stylesheet" href="../coverage.css"/>
     <script src="../highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
@@ -15,7 +15,7 @@
           <span class="dirname">src/</span>chess_ai.ml
         </a>
       </h1>
-      <h2>80.43%</h2>
+      <h2>81.52%</h2>
     </div>
     <div id="navbar">
       <span class="unvisited" style="bottom:48.39%"></span>
@@ -31,7 +31,6 @@
       <span class="unvisited" style="bottom:30.11%"></span>
       <span class="unvisited" style="bottom:29.75%"></span>
       <span class="unvisited" style="bottom:28.67%"></span>
-      <span class="unvisited" style="bottom:17.20%"></span>
       <span class="some-visited" style="bottom:12.90%"></span>
       <span class="unvisited" style="bottom:2.87%"></span>
       <span class="unvisited" style="bottom:1.79%"></span>
@@ -269,7 +268,7 @@
 <a id="L228"></a><span > </span>
 <a id="L229"></a><span > </span>
 <a id="L230"></a><span class="visited"> </span>
-<a id="L231"></a><span class="unvisited"> </span>
+<a id="L231"></a><span class="visited"> </span>
 <a id="L232"></a><span class="visited"> </span>
 <a id="L233"></a><span > </span>
 <a id="L234"></a><span > </span>
@@ -694,38 +693,38 @@ module Eval : Evaluation = struct
     |]
 
   let get_y (piece_color : Board.color) (y_cor : int) : int =
-    <span data-count="48">m</span>atch piece_color with <span data-count="28">B</span>oard.White -&gt; y_cor | <span data-count="20">B</span>oard.Black -&gt; 7 - y_cor
+    <span data-count="304">m</span>atch piece_color with <span data-count="199">B</span>oard.White -&gt; y_cor | <span data-count="105">B</span>oard.Black -&gt; 7 - y_cor
 
   let get_multiplier (piece_color : Board.color) : float =
-    <span data-count="48">m</span>atch piece_color with <span data-count="28">B</span>oard.White -&gt; 1. | <span data-count="20">B</span>oard.Black -&gt; -1.
+    <span data-count="304">m</span>atch piece_color with <span data-count="199">B</span>oard.White -&gt; 1. | <span data-count="105">B</span>oard.Black -&gt; -1.
 
   let evaluate (board : Board.Board_state.t) (player_color : Lib.color) : float =
-    <span data-count="5">l</span>et rec calculate_score (pos_keys : Lib.position_key list) : float =
-      <span data-count="53">m</span>atch pos_keys with
-      | <span data-count="5">[</span>] -&gt; 0.0
-      | <span data-count="48">c</span>urr_key :: rem_keys -&gt;
+    <span data-count="90">l</span>et rec calculate_score (pos_keys : Lib.position_key list) : float =
+      <span data-count="394">m</span>atch pos_keys with
+      | <span data-count="90">[</span>] -&gt; 0.0
+      | <span data-count="304">c</span>urr_key :: rem_keys -&gt;
           let curr_piece_info = Board.Board_state.get_piece board curr_key in
-          <span data-count="48">l</span>et abs_score =
+          <span data-count="304">l</span>et abs_score =
             match curr_piece_info.piece with
-            | <span data-count="16">B</span>oard.Pawn -&gt;
+            | <span data-count="94">B</span>oard.Pawn -&gt;
                 Float.(
                   10.
-                  + pawn_score.(get_<span data-count="16">y</span> curr_piece_info.color curr_key.y).(curr_key
+                  + pawn_score.(get_<span data-count="94">y</span> curr_piece_info.color curr_key.y).(curr_key
                                                                            .x))
-            | <span data-count="12">B</span>oard.Rook -&gt;
+            | <span data-count="20">B</span>oard.Rook -&gt;
                 Float.(
                   50.
-                  + rook_score.(get_<span data-count="12">y</span> curr_piece_info.color curr_key.y).(curr_key
+                  + rook_score.(get_<span data-count="20">y</span> curr_piece_info.color curr_key.y).(curr_key
                                                                            .x))
             | <span data-count="2">B</span>oard.Queen -&gt;
                 Float.(
                   90.
                   + queen_score.(get_<span data-count="2">y</span> curr_piece_info.color curr_key.y).(curr_key
                                                                             .x))
-            | <span data-count="10">B</span>oard.King -&gt;
+            | <span data-count="180">B</span>oard.King -&gt;
                 Float.(
                   900.
-                  + king_score.(get_<span data-count="10">y</span> curr_piece_info.color curr_key.y).(curr_key
+                  + king_score.(get_<span data-count="180">y</span> curr_piece_info.color curr_key.y).(curr_key
                                                                            .x))
             | <span data-count="4">B</span>oard.Bishop -&gt;
                 Float.(
@@ -739,17 +738,17 @@ module Eval : Evaluation = struct
                                                                              .x))
           in
           Float.(
-            (get_multiplie<span data-count="48">r</span> curr_piece_info.color * abs_score)
-            + calculate_scor<span data-count="48">e</span> rem_keys)
+            (get_multiplie<span data-count="304">r</span> curr_piece_info.color * abs_score)
+            + calculate_scor<span data-count="304">e</span> rem_keys)
     in
-    let piece_square_score = calculate_score (Board.Board_state.get_key<span data-count="5">s</span> board)
+    let piece_square_score = calculate_score (Board.Board_state.get_key<span data-count="90">s</span> board)
     in
-    <span data-count="5">i</span>f (Board.Board_state.in_check board (Board.Board_state.next_playe<span data-count="7">r</span> player_color)) then
+    <span data-count="90">i</span>f (Board.Board_state.in_check board (Board.Board_state.next_playe<span data-count="91">r</span> player_color)) then
       <span data-count="0">F</span>loat.(10000. * piece_square_score)
-    else <span data-count="5">i</span>f (Board.Board_state.in_checkmate board (Board.Board_state.next_playe<span data-count="6">r</span> player_color)) then
+    else <span data-count="90">i</span>f (Board.Board_state.in_checkmate board (Board.Board_state.next_playe<span data-count="90">r</span> player_color)) then
       <span data-count="0">F</span>loat.max_value
     else
-      <span data-count="6">p</span>iece_square_score
+      <span data-count="90">p</span>iece_square_score
 end
 
 module type Minimax = sig
@@ -773,14 +772,14 @@ module Minimax : Minimax = struct
   let org_beta = Float.max_value
 
   let difficulty_map =
-    Difficulty_map.empty |&gt; Map.add_ex<span data-count="3">n</span> ~key:1 ~data:2
-    |&gt; Map.add_ex<span data-count="3">n</span> ~key:2 ~data:3 |&gt; Map.add_ex<span data-count="3">n</span> ~key:3 ~data:4
+    Difficulty_map.empty |&gt; Map.add_ex<span data-count="13">n</span> ~key:1 ~data:2
+    |&gt; Map.add_ex<span data-count="13">n</span> ~key:2 ~data:3 |&gt; Map.add_ex<span data-count="13">n</span> ~key:3 ~data:4
 
   let rec minimax (board : Board.Board_state.t) (depth : int)
       (maximizePlayer : bool) (curr_color : Lib.color) (alpha : float)
       (beta : float) : float =
-    <span data-count="10">i</span>f depth = 0 then <span data-count="4">F</span>loat.(-evaluat<span data-count="4">e</span> board curr_color)
-    else <span data-count="6">i</span>f maximizePlayer then
+    <span data-count="118">i</span>f depth = 0 then <span data-count="89">F</span>loat.(-evaluat<span data-count="89">e</span> board curr_color)
+    else <span data-count="29">i</span>f maximizePlayer then
       <span data-count="0">l</span>et rec get_max_val (all_moves : Board.movement list) (max_val : float)
           (aux_alpha : float) : float =
         <span data-count="0">m</span>atch all_moves with
@@ -803,82 +802,82 @@ module Minimax : Minimax = struct
         (Board.Board_state.valid_moves_colo<span data-count="0">r</span> board curr_color)
         Float.min_value alpha
     else
-      <span data-count="6">l</span>et rec get_min_val (all_moves : Board.movement list) (min_val : float)
+      <span data-count="29">l</span>et rec get_min_val (all_moves : Board.movement list) (min_val : float)
           (aux_beta : float) : float =
-        <span data-count="8">m</span>atch all_moves with
-        | <span data-count="4">[</span>] -&gt; min_val
-        | <span data-count="4">m</span>ove :: rem_moves -&gt;
+        <span data-count="105">m</span>atch all_moves with
+        | <span data-count="16">[</span>] -&gt; min_val
+        | <span data-count="89">m</span>ove :: rem_moves -&gt;
             let current_board =
               Board.Board_state.move board move.start move.dest
             in
-            <span data-count="4">l</span>et move_value =
+            <span data-count="89">l</span>et move_value =
               minimax current_board (depth - 1) true
-                (Board.Board_state.next_playe<span data-count="4">r</span> curr_color)
+                (Board.Board_state.next_playe<span data-count="89">r</span> curr_color)
                 alpha aux_beta
             in
-            <span data-count="4">l</span>et new_min_val = Float.min min_val move_value in
-            <span data-count="4">l</span>et new_beta = Float.min aux_beta new_min_val in
-            <span data-count="4">i</span>f Float.(new_beta &lt;= alpha) then <span data-count="2">n</span>ew_min_val
-            else <span data-count="2">g</span>et_min_val rem_moves new_min_val new_beta
+            <span data-count="89">l</span>et new_min_val = Float.min min_val move_value in
+            <span data-count="89">l</span>et new_beta = Float.min aux_beta new_min_val in
+            <span data-count="89">i</span>f Float.(new_beta &lt;= alpha) then <span data-count="13">n</span>ew_min_val
+            else <span data-count="76">g</span>et_min_val rem_moves new_min_val new_beta
       in
       get_min_val
-        (Board.Board_state.valid_moves_colo<span data-count="6">r</span> board curr_color)
+        (Board.Board_state.valid_moves_colo<span data-count="29">r</span> board curr_color)
         Float.max_value beta
 
   let generate_updated_board (board : Board.Board_state.t)
       (curr_color : Lib.color) (depth : int) (alpha : float) (beta : float) :
       string =
-    <span data-count="4">l</span>et rec aux_generate_next_best_move (all_next_moves : Board.movement list)
+    <span data-count="8">l</span>et rec aux_generate_next_best_move (all_next_moves : Board.movement list)
         (best_move : Board.movement) (max_val : float) (aux_alpha : float) :
         float * Board.movement =
-      <span data-count="6">m</span>atch all_next_moves with
-      | <span data-count="0">[</span>] -&gt; (max_val, best_move)
-      | <span data-count="6">m</span>ove :: rem_moves -&gt;
+      <span data-count="32">m</span>atch all_next_moves with
+      | <span data-count="3">[</span>] -&gt; (max_val, best_move)
+      | <span data-count="29">m</span>ove :: rem_moves -&gt;
           let current_board =
             Board.Board_state.move board move.start move.dest
           in
-          <span data-count="6">l</span>et move_value =
+          <span data-count="29">l</span>et move_value =
             minimax current_board (depth - 1) false
-              (Board.Board_state.next_playe<span data-count="6">r</span> curr_color)
+              (Board.Board_state.next_playe<span data-count="29">r</span> curr_color)
               aux_alpha beta
           in
-          <span data-count="6">l</span>et new_max_val = Float.max max_val move_value in
-          <span data-count="6">l</span>et new_best_move =
-            if Float.(new_max_val &gt; max_val) then <span data-count="6">m</span>ove else <span data-count="0">b</span>est_move
+          <span data-count="29">l</span>et new_max_val = Float.max max_val move_value in
+          <span data-count="29">l</span>et new_best_move =
+            if Float.(new_max_val &gt; max_val) then <span data-count="29">m</span>ove else <span data-count="0">b</span>est_move
           in
           let new_alpha = Float.max aux_alpha new_max_val in
-          <span data-count="6">i</span>f Float.(beta &lt;= new_alpha) then <span data-count="2">(</span>new_max_val, new_best_move)
+          <span data-count="29">i</span>f Float.(beta &lt;= new_alpha) then <span data-count="3">(</span>new_max_val, new_best_move)
           else
-            <span data-count="4">a</span>ux_generate_next_best_move rem_moves new_best_move max_val
+            <span data-count="26">a</span>ux_generate_next_best_move rem_moves new_best_move max_val
               new_alpha
     in
     let all_valid_moves =
       Board.Board_state.valid_moves_color board curr_color
     in
-    <span data-count="4">i</span>f List.lengt<span data-count="4">h</span> all_valid_moves = 0 then <span data-count="2">B</span>oard.Board_state.export board
+    <span data-count="8">i</span>f List.lengt<span data-count="8">h</span> all_valid_moves = 0 then <span data-count="2">B</span>oard.Board_state.export board
     else
-      <span data-count="2">l</span>et _, next_move =
+      <span data-count="6">l</span>et _, next_move =
         aux_generate_next_best_move all_valid_moves
           Board.{ start = { x = -1; y = -1 }; dest = { x = -1; y = -1 } }
           Float.min_value alpha
       in
-      <span data-count="2">B</span>oard.Board_state.mov<span data-count="2">e</span> board next_move.start next_move.dest
+      <span data-count="6">B</span>oard.Board_state.mov<span data-count="6">e</span> board next_move.start next_move.dest
       |&gt; Board.Board_state.export
 
   let convert_color (color_code : char) : Lib.color =
-    <span data-count="4">i</span>f Char.equal color_code 'B' then <span data-count="2">L</span>ib.Black else <span data-count="2">L</span>ib.White
+    <span data-count="8">i</span>f Char.equal color_code 'B' then <span data-count="2">L</span>ib.Black else <span data-count="6">L</span>ib.White
 
   (* generates the next move based on the difficulty provided *)
   let generate_next_move (start_board_str : string) (player_color : char)
       (difficulty : int) : string =
-    <span data-count="4">m</span>atch Board.Board_state.import start_board_str with
+    <span data-count="8">m</span>atch Board.Board_state.import start_board_str with
     | <span data-count="0">N</span>one -&gt; start_board_str
-    | <span data-count="4">S</span>ome board_state -&gt; (
+    | <span data-count="8">S</span>ome board_state -&gt; (
         match Map.find difficulty_map difficulty with
         | <span data-count="0">N</span>one -&gt; start_board_str
-        | <span data-count="4">S</span>ome depth -&gt;
+        | <span data-count="8">S</span>ome depth -&gt;
             generate_updated_board board_state
-              (convert_colo<span data-count="4">r</span> player_color)
+              (convert_colo<span data-count="8">r</span> player_color)
               depth org_alpha org_beta)
 end
 </code></pre>

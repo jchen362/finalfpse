@@ -6,6 +6,7 @@ include Lib
 [@@@ocaml.warning "-32"]
 [@@@ocaml.warning "-33"]
 
+
 type piece_type = Pawn | Rook | Knight | Queen | King | Bishop
 [@@deriving equal]
 
@@ -234,11 +235,9 @@ module Board_state = struct
       let multiplier : Lib.position_key =
         if start.y - dest.y > 0 then (* piece is moving up *)
           { x = 0; y = -1 }
-        else if start.y - dest.y < 0 then
+        else
           (* piece is moving down *)
           { x = 0; y = 1 }
-        else (* no movement *)
-          { x = 0; y = 0 }
       in
       aux_can_move board_state start dest
         { x = start.x + multiplier.x; y = start.y + multiplier.y }
@@ -252,11 +251,9 @@ module Board_state = struct
       let multiplier : Lib.position_key =
         if start.x - dest.x > 0 then (* piece is moving left *)
           { x = -1; y = 0 }
-        else if start.x - dest.x < 0 then
+        else
           (* piece is moving right *)
           { x = 1; y = 0 }
-        else (* no movement *)
-          { x = 0; y = 0 }
       in
       aux_can_move board_state start dest
         { x = start.x + multiplier.x; y = start.y + multiplier.y }
@@ -277,11 +274,9 @@ module Board_state = struct
         else if start.x - dest.x > 0 && start.y - dest.y < 0 then
           (* piece is moving down-left *)
           { x = -1; y = 1 }
-        else if start.x - dest.x < 0 && start.y - dest.y < 0 then
+        else
           (* piece is moving down-right *)
           { x = 1; y = 1 }
-        else (* no movement *)
-          { x = 0; y = 0 }
       in
       aux_can_move board_state start dest
         { x = start.x + multiplier.x; y = start.y + multiplier.y }

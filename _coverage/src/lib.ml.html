@@ -645,7 +645,7 @@
 <pre><code class="ocaml">open Core
 
 <span data-count="0">t</span>ype color = Black | White [@@deriving equal]
-<span data-count="0">t</span>ype position_key = { <span data-count="0">x</span> : <span data-count="997931">i</span>nt; <span data-count="0">y</span> : int } [@@deriving compare, sexp, equal]
+<span data-count="0">t</span>ype position_key = { <span data-count="0">x</span> : <span data-count="1248152">i</span>nt; <span data-count="0">y</span> : int } [@@deriving compare, sexp, equal]
 
 module type Piece = sig
   val in_bounds : position_key -&gt; bool
@@ -661,9 +661,9 @@ end
    assumed x was horizontal, y was vertical, top left is 0, 0*)
 module King : Piece = struct
   let in_bounds (pos : position_key) : bool =
-    <span data-count="5835">i</span>f pos.x &lt; <span data-count="667">0</span> || pos.x &gt; <span data-count="31">7</span> then <span data-count="698">f</span>alse
-    else <span data-count="5137">i</span>f pos.y &lt; <span data-count="707">0</span> || pos.y &gt; <span data-count="924">7</span> then <span data-count="1631">f</span>alse
-    else <span data-count="3506">t</span>rue
+    <span data-count="15519">i</span>f pos.x &lt; <span data-count="775">0</span> || pos.x &gt; <span data-count="31">7</span> then <span data-count="806">f</span>alse
+    else <span data-count="14713">i</span>f pos.y &lt; <span data-count="798">0</span> || pos.y &gt; <span data-count="2639">7</span> then <span data-count="3437">f</span>alse
+    else <span data-count="11276">t</span>rue
 
   let can_move (start : position_key) (dest : position_key) (curr_color : color)
       : bool =
@@ -673,20 +673,20 @@ module King : Piece = struct
 
   let rec generate_moves_king_helper (start : position_key)
       (add : position_key list) (ls : position_key list) : position_key list =
-    <span data-count="5814">m</span>atch add with
-    | <span data-count="646">[</span>] -&gt; ls
-    | <span data-count="5168">h</span> :: t -&gt;
+    <span data-count="15498">m</span>atch add with
+    | <span data-count="1722">[</span>] -&gt; ls
+    | <span data-count="13776">h</span> :: t -&gt;
         if in_bounds { x = start.x + h.x; y = start.y + h.y } then
-          <span data-count="2843">g</span>enerate_moves_king_helper start t
+          <span data-count="9537">g</span>enerate_moves_king_helper start t
             ({ x = start.x + h.x; y = start.y + h.y } :: ls)
-        else <span data-count="2325">g</span>enerate_moves_king_helper start t ls
+        else <span data-count="4239">g</span>enerate_moves_king_helper start t ls
 
   let generate_moves (start : position_key) (c : color) : position_key list =
-    <span data-count="646">m</span>atch c with
-    | <span data-count="646">_</span> -&gt;
-        if not (in_bound<span data-count="646">s</span> start) then <span data-count="0">[</span>]
+    <span data-count="1722">m</span>atch c with
+    | <span data-count="1722">_</span> -&gt;
+        if not (in_bound<span data-count="1722">s</span> start) then <span data-count="0">[</span>]
         else
-          <span data-count="646">g</span>enerate_moves_king_helper start
+          <span data-count="1722">g</span>enerate_moves_king_helper start
             [
               { x = 1; y = 0 };
               { x = 1; y = 1 };
@@ -773,13 +773,13 @@ end
 
 module Pawn : Piece = struct
   let in_bounds (pos : position_key) : bool =
-    <span data-count="4290">i</span>f pos.x &lt; <span data-count="156">0</span> || pos.x &gt; <span data-count="178">7</span> then <span data-count="334">f</span>alse
-    else <span data-count="3956">i</span>f pos.y &lt; <span data-count="1">0</span> || pos.y &gt; <span data-count="1">7</span> then <span data-count="2">f</span>alse
-    else <span data-count="3954">t</span>rue
+    <span data-count="6789">i</span>f pos.x &lt; <span data-count="156">0</span> || pos.x &gt; <span data-count="178">7</span> then <span data-count="334">f</span>alse
+    else <span data-count="6455">i</span>f pos.y &lt; <span data-count="1">0</span> || pos.y &gt; <span data-count="1">7</span> then <span data-count="2">f</span>alse
+    else <span data-count="6453">t</span>rue
 
   let is_first_move (pos : position_key) (curr_color : color) : bool =
-    <span data-count="1435">m</span>atch curr_color with
-    | <span data-count="573">W</span>hite -&gt; if pos.y = 6 then <span data-count="521">t</span>rue else <span data-count="52">f</span>alse
+    <span data-count="2268">m</span>atch curr_color with
+    | <span data-count="1406">W</span>hite -&gt; if pos.y = 6 then <span data-count="1102">t</span>rue else <span data-count="304">f</span>alse
     | <span data-count="862">B</span>lack -&gt; if pos.y = 1 then <span data-count="672">t</span>rue else <span data-count="190">f</span>alse
 
   let can_move (start : position_key) (dest : position_key) (curr_color : color)
@@ -798,39 +798,39 @@ module Pawn : Piece = struct
 
   let move_up (current : position_key) (color_multiplier : int)
       (curr_color : color) : position_key list =
-    <span data-count="1425">i</span>f is_first_move current curr_color then
-      <span data-count="1189">[</span>
+    <span data-count="2258">i</span>f is_first_move current curr_color then
+      <span data-count="1770">[</span>
         { x = current.x; y = current.y - (color_multiplier * 1) };
         { x = current.x; y = current.y - (color_multiplier * 2) };
       ]
-    else <span data-count="236">[</span> { x = current.x; y = current.y - (color_multiplier * 1) } ]
+    else <span data-count="488">[</span> { x = current.x; y = current.y - (color_multiplier * 1) } ]
 
   let move_left_diag (current : position_key) (color_multiplier : int)
       (ls : position_key list) : position_key list =
-    <span data-count="1425">i</span>f in_bounds { x = current.x - 1; y = current.y - (color_multiplier * 1) }
-    then <span data-count="1270">{</span> x = current.x - 1; y = current.y - (color_multiplier * 1) } :: ls
+    <span data-count="2258">i</span>f in_bounds { x = current.x - 1; y = current.y - (color_multiplier * 1) }
+    then <span data-count="2103">{</span> x = current.x - 1; y = current.y - (color_multiplier * 1) } :: ls
     else <span data-count="155">l</span>s
 
   let move_right_diag (current : position_key) (color_multiplier : int)
       (ls : position_key list) : position_key list =
-    <span data-count="1425">i</span>f in_bounds { x = current.x + 1; y = current.y - (color_multiplier * 1) }
-    then <span data-count="1248">{</span> x = current.x + 1; y = current.y - (color_multiplier * 1) } :: ls
+    <span data-count="2258">i</span>f in_bounds { x = current.x + 1; y = current.y - (color_multiplier * 1) }
+    then <span data-count="2081">{</span> x = current.x + 1; y = current.y - (color_multiplier * 1) } :: ls
     else <span data-count="177">l</span>s
 
   let generate_moves (start : position_key) (c : color) : position_key list =
-    <span data-count="1425">i</span>f not (in_bound<span data-count="1425">s</span> start) then <span data-count="0">[</span>]
+    <span data-count="2258">i</span>f not (in_bound<span data-count="2258">s</span> start) then <span data-count="0">[</span>]
     else
-      <span data-count="1425">l</span>et color_multiplier = match c with <span data-count="570">W</span>hite -&gt; 1 | <span data-count="855">B</span>lack -&gt; -1 in
-      move_u<span data-count="1425">p</span> start color_multiplier c
-      |&gt; move_left_dia<span data-count="1425">g</span> start color_multiplier
+      <span data-count="2258">l</span>et color_multiplier = match c with <span data-count="1403">W</span>hite -&gt; 1 | <span data-count="855">B</span>lack -&gt; -1 in
+      move_u<span data-count="2258">p</span> start color_multiplier c
+      |&gt; move_left_dia<span data-count="2258">g</span> start color_multiplier
       |&gt; move_right_diag start color_multiplier
 end
 
 module Rook : Piece = struct
   let in_bounds (pos : position_key) : bool =
-    <span data-count="11129">i</span>f pos.x &lt; <span data-count="585">0</span> || pos.x &gt; <span data-count="585">7</span> then <span data-count="1170">f</span>alse
-    else <span data-count="9959">i</span>f pos.y &lt; <span data-count="585">0</span> || pos.y &gt; <span data-count="585">7</span> then <span data-count="1170">f</span>alse
-    else <span data-count="8789">t</span>rue
+    <span data-count="12706">i</span>f pos.x &lt; <span data-count="668">0</span> || pos.x &gt; <span data-count="668">7</span> then <span data-count="1336">f</span>alse
+    else <span data-count="11370">i</span>f pos.y &lt; <span data-count="668">0</span> || pos.y &gt; <span data-count="668">7</span> then <span data-count="1336">f</span>alse
+    else <span data-count="10034">t</span>rue
 
   let can_move (start : position_key) (dest : position_key) (curr_color : color)
       : bool =
@@ -840,32 +840,32 @@ module Rook : Piece = struct
 
   let rec move_rook_up (current : position_key) (ls : position_key list) :
       position_key list =
-    <span data-count="2388">i</span>f not (in_bound<span data-count="2388">s</span> current) then <span data-count="584">l</span>s
-    else <span data-count="1804">m</span>ove_rook_up { x = current.x; y = current.y - 1 } (current :: ls)
+    <span data-count="2788">i</span>f not (in_bound<span data-count="2788">s</span> current) then <span data-count="667">l</span>s
+    else <span data-count="2121">m</span>ove_rook_up { x = current.x; y = current.y - 1 } (current :: ls)
 
   let rec move_rook_down (current : position_key) (ls : position_key list) :
       position_key list =
-    <span data-count="2868">i</span>f not (in_bound<span data-count="2868">s</span> current) then <span data-count="584">l</span>s
-    else <span data-count="2284">m</span>ove_rook_down { x = current.x; y = current.y + 1 } (current :: ls)
+    <span data-count="3215">i</span>f not (in_bound<span data-count="3215">s</span> current) then <span data-count="667">l</span>s
+    else <span data-count="2548">m</span>ove_rook_down { x = current.x; y = current.y + 1 } (current :: ls)
 
   let rec move_rook_left (current : position_key) (ls : position_key list) :
       position_key list =
-    <span data-count="2731">i</span>f not (in_bound<span data-count="2731">s</span> current) then <span data-count="584">l</span>s
-    else <span data-count="2147">m</span>ove_rook_left { x = current.x - 1; y = current.y } (current :: ls)
+    <span data-count="3262">i</span>f not (in_bound<span data-count="3262">s</span> current) then <span data-count="667">l</span>s
+    else <span data-count="2595">m</span>ove_rook_left { x = current.x - 1; y = current.y } (current :: ls)
 
   let rec move_rook_right (current : position_key) (ls : position_key list) :
       position_key list =
-    <span data-count="2525">i</span>f not (in_bound<span data-count="2525">s</span> current) then <span data-count="584">l</span>s
-    else <span data-count="1941">m</span>ove_rook_right { x = current.x + 1; y = current.y } (current :: ls)
+    <span data-count="2741">i</span>f not (in_bound<span data-count="2741">s</span> current) then <span data-count="667">l</span>s
+    else <span data-count="2074">m</span>ove_rook_right { x = current.x + 1; y = current.y } (current :: ls)
 
   let generate_moves (start : position_key) (c : color) : position_key list =
-    <span data-count="584">m</span>atch c with
-    | <span data-count="584">_</span> -&gt;
-        if not (in_bound<span data-count="584">s</span> start) then <span data-count="0">[</span>]
+    <span data-count="667">m</span>atch c with
+    | <span data-count="667">_</span> -&gt;
+        if not (in_bound<span data-count="667">s</span> start) then <span data-count="0">[</span>]
         else
-          <span data-count="584">m</span>ove_rook_u<span data-count="584">p</span> { x = start.x; y = start.y - 1 } []
-          |&gt; move_rook_dow<span data-count="584">n</span> { x = start.x; y = start.y + 1 }
-          |&gt; move_rook_lef<span data-count="584">t</span> { x = start.x - 1; y = start.y }
+          <span data-count="667">m</span>ove_rook_u<span data-count="667">p</span> { x = start.x; y = start.y - 1 } []
+          |&gt; move_rook_dow<span data-count="667">n</span> { x = start.x; y = start.y + 1 }
+          |&gt; move_rook_lef<span data-count="667">t</span> { x = start.x - 1; y = start.y }
           |&gt; move_rook_right { x = start.x + 1; y = start.y }
 end
 

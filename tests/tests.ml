@@ -285,12 +285,19 @@ let test_board_state_e4 _ =
   | None -> assert_failure "board state import and export failed"
   | Some board -> assert_equal e4_fen @@ Board_state.export board
 
+let test_empty_fen_import _ = (
+  assert_equal None ("" |> Board_state.import);
+  assert_equal None (" " |> Board_state.import);
+  assert_equal None ("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKB@R" |> Board_state.import);
+  assert_equal None ("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR/AB" |> Board_state.import)
+)
 let board_io_tests =
   "board io tests"
   >: test_list
        [
          "test_board_state_empty" >:: test_board_state_empty;
          "test_board_state_e4" >:: test_board_state_e4;
+         "test_empty_fen_import" >:: test_empty_fen_import;
        ]
 
 let default_white_pawn_2 = { x = 1; y = 6 }
@@ -314,7 +321,9 @@ let test_valid_move_pawn _ =
   assert_equal true
   @@ Board_state.valid_move default_board default_white_pawn_2 { x = 1; y = 5 };
   assert_equal true
-  @@ Board_state.valid_move default_board default_white_pawn_2 { x = 1; y = 4 }
+  @@ Board_state.valid_move default_board default_white_pawn_2 { x = 1; y = 4 };
+  assert_equal false
+  @@ Board_state.valid_move default_board default_white_pawn_2 { x = 2; y = 6 }
 
 let test_valid_move_rook _ =
   assert_equal false
@@ -336,7 +345,10 @@ let test_valid_move_knight _ =
        { x = 3; y = 6 };
   assert_equal true
   @@ Board_state.valid_move default_board default_white_left_knight
-       { x = 2; y = 5 }
+       { x = 2; y = 5 };
+  assert_equal false
+  @@ Board_state.valid_move default_board default_white_left_knight
+       { x = 4; y = 7 }
 
 let test_valid_move_bishop _ =
   assert_equal false
@@ -344,7 +356,17 @@ let test_valid_move_bishop _ =
        { x = 3; y = 6 };
   assert_equal false
   @@ Board_state.valid_move default_board default_white_left_bishop
-       { x = 4; y = 5 }
+       { x = 4; y = 5 };
+  assert_equal false
+  @@ Board_state.valid_move default_board default_white_left_bishop
+    { x = 3; y = 6 };
+  assert_equal false
+  @@ Board_state.valid_move default_board default_white_left_bishop
+    { x = 2; y = 5 };
+  assert_equal false
+  @@ Board_state.valid_move default_board default_white_left_bishop
+    { x = 4; y = 7 }
+
 
 let test_valid_move_queen _ =
   assert_equal false
