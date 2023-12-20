@@ -137,12 +137,17 @@ let test_pawn_can_move _ =
   assert_equal true
   @@ List.for_all
        ~f:(fun end_pos -> Pawn.can_move default_pos_black_pawn end_pos Black)
-       end_pos_default_black_pawn
+       end_pos_default_black_pawn;
+  assert_equal false
+  @@ (Pawn.can_move default_pos_black_pawn {x = 4; y = 4} Black);
+  assert_equal false
+  @@ (Pawn.can_move {x = 5; y = 10} {x = 10; y = 11} Black)
 
 let test_pawn_generate_moves _ =
   assert_equal end_pos_default_black_pawn
   @@ Pawn.generate_moves default_pos_black_pawn Black;
-  assert_equal end_pos_black_pawn @@ Pawn.generate_moves start_pos Black
+  assert_equal end_pos_black_pawn @@ Pawn.generate_moves start_pos Black;
+  assert_equal [] @@ Pawn.generate_moves {x = -1; y = 5} Black
 
 let test_pawn_move_invariant _ =
   assert_equal true
@@ -157,9 +162,14 @@ let test_bishop_can_move _ =
   assert_equal true
   @@ List.for_all
        ~f:(fun end_pos -> Bishop.can_move start_pos end_pos White)
-       end_pos_diag_negative
+       end_pos_diag_negative;
+  assert_equal false (Bishop.can_move {x = 1; y =1} {x = -1;y = -1} White);
+  assert_equal false (Bishop.can_move {x = 1; y =1} {x = 4;y = 5} White)
+  
 
-let test_bishop_generate_moves _ = assert_equal true true
+let test_bishop_generate_moves _ = (
+  assert_equal [] (Bishop.generate_moves {x = -1; y = -1} Black)
+)
 
 let test_bishop_move_invariant _ =
   assert_equal true
@@ -171,7 +181,9 @@ let test_knight_can_move _ =
   assert_equal true
   @@ List.for_all
        ~f:(fun end_pos -> Knight.can_move start_pos end_pos White)
-       end_pos_knight
+       end_pos_knight;
+  assert_equal false (Knight.can_move {x = 1; y =1} {x = 4;y = 4} White);
+  assert_equal false (Knight.can_move {x = 1; y =1} {x = 4;y = -4} White)
 
 let test_knight_generate_moves _ = assert_equal true true
 
@@ -189,11 +201,15 @@ let test_rook_can_move _ =
   assert_equal true
   @@ List.for_all
        ~f:(fun end_pos -> Rook.can_move start_pos end_pos White)
-       end_pos_vert
+       end_pos_vert;
+  assert_equal false (Rook.can_move {x = 1; y = 1} {x = -1; y = -1} Black);
+  assert_equal false (Rook.can_move {x = 1; y = 1} {x = 4; y = 5} Black)
 
 let test_rook_generate_moves _ =
   assert_equal (end_pos_horiz @ end_pos_vert)
-  @@ Rook.generate_moves start_pos White
+  @@ Rook.generate_moves start_pos White;
+  assert_equal [] (Rook.generate_moves {x = -1; y = -1} Black)
+
 
 let test_rook_move_invariant _ =
   assert_equal true
@@ -216,9 +232,15 @@ let test_queen_can_move _ =
   assert_equal true
   @@ List.for_all
        ~f:(fun end_pos -> Queen.can_move start_pos end_pos White)
-       end_pos_vert
+       end_pos_vert;
+  assert_equal false
+  @@ (Queen.can_move {x = 4; y = 4} {x = 3; y = 6} White);
+  assert_equal false
+  @@ (Queen.can_move {x = 4; y = 4} {x = -3; y = 6} White)
 
-let test_queen_generate_moves _ = assert_equal true true
+let test_queen_generate_moves _ = (
+  assert_equal [] (Queen.generate_moves {x = 10; y = 10} White)
+)
 
 let test_queen_move_invariant _ =
   assert_equal true
@@ -230,9 +252,14 @@ let test_king_can_move _ =
   assert_equal true
   @@ List.for_all
        ~f:(fun end_pos -> King.can_move start_pos end_pos White)
-       end_pos_king
+       end_pos_king;
+  assert_equal false (King.can_move {x = 1; y = 1} {x = -1; y = -1} Black);
+  assert_equal false (King.can_move {x = 1; y = 1} {x = 4; y = 4} Black)
+    
 
-let test_king_generate_moves _ = assert_equal true true
+let test_king_generate_moves _ = (
+  assert_equal [] (King.generate_moves {x = -1; y = -1} Black)
+)
 
 let test_king_move_invariant _ =
   assert_equal true

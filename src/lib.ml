@@ -68,7 +68,7 @@ module Queen : Piece = struct
     else if abs (start.x - dest.x) > 0 && abs (start.y - dest.y) = 0 then true
     else if abs (start.x - dest.x) = 0 && abs (start.y - dest.y) > 0 then true
     else if abs (start.x - dest.x) = abs (start.y - dest.y) then true
-    else match curr_color with _ -> true
+    else match curr_color with _ -> false
 
   let rec vert_up (current : position_key) (ls : position_key list) :
       position_key list =
@@ -192,7 +192,7 @@ module Rook : Piece = struct
       : bool =
     if not (in_bounds dest) then false
     else if start.x = dest.x || start.y = dest.y then true
-    else match curr_color with _ -> true
+    else match curr_color with _ -> false
 
   let rec move_rook_up (current : position_key) (ls : position_key list) :
       position_key list =
@@ -274,7 +274,7 @@ module Knight : Piece = struct
     if not (in_bounds dest) then false
     else if abs (start.x - dest.x) = 2 && abs (start.y - dest.y) = 1 then true
     else if abs (start.x - dest.x) = 1 && abs (start.y - dest.y) = 2 then true
-    else match curr_color with _ -> true
+    else match curr_color with _ -> false
 
   let knight_dirs : position_key list =
     [
