@@ -1096,115 +1096,115 @@ module Board_state = struct
 
   (*Returns true if they are the same color*)
   let matches_color (c1 : Lib.color) (c2 : Lib.color) : bool =
-    <span data-count="17557">m</span>atch (c1, c2) with
-    | <span data-count="4774">B</span>lack, Black -&gt; true
-    | <span data-count="4987">W</span>hite, White -&gt; true
-    | <span data-count="7796">_</span>, _ -&gt; false
+    <span data-count="40622">m</span>atch (c1, c2) with
+    | <span data-count="8499">B</span>lack, Black -&gt; true
+    | <span data-count="9275">W</span>hite, White -&gt; true
+    | <span data-count="22848">_</span>, _ -&gt; false
 
   let parse_piece (ch : char) : map_value option =
-    <span data-count="408">m</span>atch ch with
+    <span data-count="412">m</span>atch ch with
     | <span data-count="48">'</span>P' -&gt; Some white_pawn
     | <span data-count="12">'</span>B' -&gt; Some white_bishop
     | <span data-count="19">'</span>N' -&gt; Some white_knight
-    | <span data-count="36">'</span>R' -&gt; Some white_rook
+    | <span data-count="38">'</span>R' -&gt; Some white_rook
     | <span data-count="7">'</span>Q' -&gt; Some white_queen
-    | <span data-count="49">'</span>K' -&gt; Some white_king
+    | <span data-count="50">'</span>K' -&gt; Some white_king
     | <span data-count="92">'</span>p' -&gt; Some black_pawn
     | <span data-count="14">'</span>b' -&gt; Some black_bishop
     | <span data-count="18">'</span>n' -&gt; Some black_knight
     | <span data-count="56">'</span>r' -&gt; Some black_rook
     | <span data-count="5">'</span>q' -&gt; Some black_queen
-    | <span data-count="51">'</span>k' -&gt; Some black_king
+    | <span data-count="52">'</span>k' -&gt; Some black_king
     | <span data-count="1">_</span> -&gt; None
 
   let rec add_piece (rank : char list) (acc : t) (x : int) (y : int)
       (piece : map_value option) : t option =
-    <span data-count="408">m</span>atch piece with
+    <span data-count="412">m</span>atch piece with
     | <span data-count="1">N</span>one -&gt; None
-    | <span data-count="407">S</span>ome piece -&gt; (
+    | <span data-count="411">S</span>ome piece -&gt; (
         let pos : Lib.position_key = { x; y } in
         match Map.add acc ~key:pos ~data:piece with
         | <span data-count="0">`</span>Duplicate -&gt; None
-        | <span data-count="407">`</span>Ok new_map -&gt; parse_rank rank new_map (x + 1) y)
+        | <span data-count="411">`</span>Ok new_map -&gt; parse_rank rank new_map (x + 1) y)
 
   and parse_rank (rank : char list) (acc : t) (x : int) (y : int) : t option =
-    <span data-count="1333">m</span>atch rank with
-    | <span data-count="407">[</span>] -&gt; if x &gt; 7 then <span data-count="407">S</span>ome acc else <span data-count="0">N</span>one
-    | <span data-count="926">h</span>d :: tl -&gt; (
+    <span data-count="1355">m</span>atch rank with
+    | <span data-count="415">[</span>] -&gt; if x &gt; 7 then <span data-count="415">S</span>ome acc else <span data-count="0">N</span>one
+    | <span data-count="940">h</span>d :: tl -&gt; (
         match hd with
-        | <span data-count="518">'</span>1' .. '8' -&gt;
-            let count = Char.to_in<span data-count="518">t</span> hd - Char.to_in<span data-count="518">t</span> '0' in
+        | <span data-count="528">'</span>1' .. '8' -&gt;
+            let count = Char.to_in<span data-count="528">t</span> hd - Char.to_in<span data-count="528">t</span> '0' in
             (* printf "%d" count; *)
             parse_rank tl acc (x + count) y
-        | <span data-count="408">_</span> -&gt;
+        | <span data-count="412">_</span> -&gt;
             (* (printf "%c"
                @@ match parse_piece hd with Some piece -&gt; piece | None -&gt; hd); *)
-            add_piece tl acc x y (parse_piec<span data-count="408">e</span> hd))
+            add_piece tl acc x y (parse_piec<span data-count="412">e</span> hd))
 
   let parse_fen_board (fen_board : string) (acc : t) (x : int) (y : int) :
       t option =
-    <span data-count="54">l</span>et rec parse_fen_board_helper (ranks : string list) (acc : t) (x : int)
+    <span data-count="55">l</span>et rec parse_fen_board_helper (ranks : string list) (acc : t) (x : int)
         (y : int) : t option =
-      <span data-count="458">m</span>atch ranks with
-      | <span data-count="50">[</span>] -&gt; Some acc
-      | <span data-count="408">h</span>d :: tl -&gt; (
-          match parse_rank (String.to_lis<span data-count="408">t</span> hd) acc x y with
-          | <span data-count="407">S</span>ome board -&gt; parse_fen_board_helper tl board x (y + 1)
+      <span data-count="467">m</span>atch ranks with
+      | <span data-count="51">[</span>] -&gt; Some acc
+      | <span data-count="416">h</span>d :: tl -&gt; (
+          match parse_rank (String.to_lis<span data-count="416">t</span> hd) acc x y with
+          | <span data-count="415">S</span>ome board -&gt; parse_fen_board_helper tl board x (y + 1)
           | <span data-count="1">N</span>one -&gt; None)
     in
     let ranks = String.split_on_chars ~on:[ '/' ] fen_board in
-    <span data-count="54">i</span>f List.lengt<span data-count="54">h</span> ranks &lt;&gt; 8 then <span data-count="3">N</span>one
-    else <span data-count="51">p</span>arse_fen_board_helper ranks acc x y
+    <span data-count="55">i</span>f List.lengt<span data-count="55">h</span> ranks &lt;&gt; 8 then <span data-count="3">N</span>one
+    else <span data-count="52">p</span>arse_fen_board_helper ranks acc x y
 
   (*FEN string to board*)
   let import (str : string) : t option =
-    <span data-count="53">m</span>atch String.split_on_chars ~on:[ ' ' ] str with
-    | <span data-count="53">h</span>d :: _ -&gt; parse_fen_board hd Position_map.empty 0 0
+    <span data-count="54">m</span>atch String.split_on_chars ~on:[ ' ' ] str with
+    | <span data-count="54">h</span>d :: _ -&gt; parse_fen_board hd Position_map.empty 0 0
     | <span data-count="0">[</span>] -&gt; None
 
   (*Maps piece type to char for printing purposes*)
   let export_piece (piece : map_value) : char =
-    <span data-count="104">m</span>atch piece with
+    <span data-count="108">m</span>atch piece with
     | <span data-count="23">{</span> piece = Pawn; color = White } -&gt; 'P'
     | <span data-count="4">{</span> piece = Bishop; color = White } -&gt; 'B'
     | <span data-count="6">{</span> piece = Knight; color = White } -&gt; 'N'
-    | <span data-count="11">{</span> piece = Rook; color = White } -&gt; 'R'
+    | <span data-count="13">{</span> piece = Rook; color = White } -&gt; 'R'
     | <span data-count="3">{</span> piece = Queen; color = White } -&gt; 'Q'
-    | <span data-count="11">{</span> piece = King; color = White } -&gt; 'K'
+    | <span data-count="12">{</span> piece = King; color = White } -&gt; 'K'
     | <span data-count="17">{</span> piece = Pawn; color = Black } -&gt; 'p'
     | <span data-count="4">{</span> piece = Bishop; color = Black } -&gt; 'b'
     | <span data-count="5">{</span> piece = Knight; color = Black } -&gt; 'n'
     | <span data-count="5">{</span> piece = Rook; color = Black } -&gt; 'r'
     | <span data-count="2">{</span> piece = Queen; color = Black } -&gt; 'q'
-    | <span data-count="13">{</span> piece = King; color = Black } -&gt; 'k'
+    | <span data-count="14">{</span> piece = King; color = Black } -&gt; 'k'
 
   (* Char.of_int_exn because count always &lt;= 8 *)
-  let int_to_char (i : int) : char = <span data-count="125">C</span>har.of_int_exn (i + Char.to_in<span data-count="125">t</span> '0')
+  let int_to_char (i : int) : char = <span data-count="135">C</span>har.of_int_exn (i + Char.to_in<span data-count="135">t</span> '0')
 
   let export_rank (board : t) (x : int) (y : int) : string =
-    <span data-count="104">l</span>et rec export_rank_helper (board : t) (count : int) (x : int) (y : int)
+    <span data-count="112">l</span>et rec export_rank_helper (board : t) (count : int) (x : int) (y : int)
         (acc : char list) : char list =
-      <span data-count="936">i</span>f x &gt; 7 then <span data-count="104">i</span>f count &gt; 0 then <span data-count="87">i</span>nt_to_cha<span data-count="87">r</span> count :: acc else <span data-count="17">a</span>cc
+      <span data-count="1008">i</span>f x &gt; 7 then <span data-count="112">i</span>f count &gt; 0 then <span data-count="94">i</span>nt_to_cha<span data-count="94">r</span> count :: acc else <span data-count="18">a</span>cc
       else
-        <span data-count="832">l</span>et pos : Lib.position_key = { x; y } in
+        <span data-count="896">l</span>et pos : Lib.position_key = { x; y } in
         let piece = Map.find board pos in
-        <span data-count="832">m</span>atch (piece, count) with
-        | <span data-count="728">N</span>one, _ -&gt; export_rank_helper board (count + 1) (x + 1) y acc
-        | <span data-count="104">S</span>ome p, c when c = 0 -&gt;
-            <span data-count="66">e</span>xport_rank_helper board 0 (x + 1) y (export_piec<span data-count="66">e</span> p :: acc)
-        | <span data-count="38">S</span>ome p, c -&gt;
+        <span data-count="896">m</span>atch (piece, count) with
+        | <span data-count="788">N</span>one, _ -&gt; export_rank_helper board (count + 1) (x + 1) y acc
+        | <span data-count="108">S</span>ome p, c when c = 0 -&gt;
+            <span data-count="67">e</span>xport_rank_helper board 0 (x + 1) y (export_piec<span data-count="67">e</span> p :: acc)
+        | <span data-count="41">S</span>ome p, c -&gt;
             export_rank_helper board 0 (x + 1) y
-              (export_piec<span data-count="38">e</span> p :: int_to_cha<span data-count="38">r</span> count :: acc)
+              (export_piec<span data-count="41">e</span> p :: int_to_cha<span data-count="41">r</span> count :: acc)
     in
-    export_rank_helpe<span data-count="104">r</span> board 0 x y [] |&gt; List.re<span data-count="104">v</span> |&gt; String.of_char_list
+    export_rank_helpe<span data-count="112">r</span> board 0 x y [] |&gt; List.re<span data-count="112">v</span> |&gt; String.of_char_list
 
   let export_ranks (board : t) : string list =
-    <span data-count="13">L</span>ist.init 8 ~f:(fun y -&gt; <span data-count="104">e</span>xport_rank board 0 y)
+    <span data-count="14">L</span>ist.init 8 ~f:(fun y -&gt; <span data-count="112">e</span>xport_rank board 0 y)
 
   (*Get FEN string from board*)
   let export (board : t) : string =
-    <span data-count="148">l</span>et ranks = export_ranks board in
-    <span data-count="14">S</span>tring.concat ~sep:"/" ranks
+    <span data-count="149">l</span>et ranks = export_ranks board in
+    <span data-count="15">S</span>tring.concat ~sep:"/" ranks
 
   (*Print out the board in terminal*)
   let print_board (board : t) : unit =
@@ -1270,33 +1270,33 @@ module Board_state = struct
   let rec aux_can_move (board_state : t) (start : Lib.position_key)
       (dest : Lib.position_key) (current : Lib.position_key)
       (multiplier : Lib.position_key) : bool =
-    <span data-count="34257">l</span>et start_piece = Map.find_exn board_state start in
-    <span data-count="34242">i</span>f current.x = dest.x &amp;&amp; <span data-count="23915">c</span>urrent.y = dest.y then
+    <span data-count="55108">l</span>et start_piece = Map.find_exn board_state start in
+    <span data-count="55093">i</span>f current.x = dest.x &amp;&amp; <span data-count="38885">c</span>urrent.y = dest.y then
       (* base case *)
-      <span data-count="12887">m</span>atch Map.find board_state current with
-      | <span data-count="9805">N</span>one -&gt; true
-      | <span data-count="3104">S</span>ome dest_piece_info -&gt;
-          if matches_color start_piece.color dest_piece_info.color then <span data-count="2599">f</span>alse
-          else <span data-count="527">t</span>rue
+      <span data-count="19487">m</span>atch Map.find board_state current with
+      | <span data-count="16208">N</span>one -&gt; true
+      | <span data-count="3301">S</span>ome dest_piece_info -&gt;
+          if matches_color start_piece.color dest_piece_info.color then <span data-count="2763">f</span>alse
+          else <span data-count="560">t</span>rue
     else
-      <span data-count="21358">m</span>atch Map.find board_state current with
-      | <span data-count="13152">N</span>one -&gt;
+      <span data-count="35609">m</span>atch Map.find board_state current with
+      | <span data-count="27110">N</span>one -&gt;
           aux_can_move board_state start dest
             { x = current.x + multiplier.x; y = current.y + multiplier.y }
             multiplier
-      | <span data-count="8203">S</span>ome _ -&gt; false
+      | <span data-count="8496">S</span>ome _ -&gt; false
 
   (*Helper function to check for pieces between vertical movement*)
   let can_move_vertical (board_state : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
-    <span data-count="9830">i</span>f start.x = dest.x &amp;&amp; <span data-count="9851">s</span>tart.y = dest.y then <span data-count="1647">f</span>alse
+    <span data-count="13374">i</span>f start.x = dest.x &amp;&amp; <span data-count="13395">s</span>tart.y = dest.y then <span data-count="1647">f</span>alse
     else
-      <span data-count="8183">l</span>et multiplier : Lib.position_key =
+      <span data-count="11727">l</span>et multiplier : Lib.position_key =
         if start.y - dest.y &gt; 0 then (* piece is moving up *)
-          <span data-count="3927">{</span> x = 0; y = -1 }
+          <span data-count="5877">{</span> x = 0; y = -1 }
         else
           (* piece is moving down *)
-          <span data-count="4277">{</span> x = 0; y = 1 }
+          <span data-count="5871">{</span> x = 0; y = 1 }
       in
       aux_can_move board_state start dest
         { x = start.x + multiplier.x; y = start.y + multiplier.y }
@@ -1305,14 +1305,14 @@ module Board_state = struct
   (*Helper function to check for pieces between horizontal movement*)
   let can_move_horizontal (board_state : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
-    <span data-count="5423">i</span>f start.x = dest.x &amp;&amp; <span data-count="0">s</span>tart.y = dest.y then <span data-count="131">f</span>alse
+    <span data-count="8772">i</span>f start.x = dest.x &amp;&amp; <span data-count="0">s</span>tart.y = dest.y then <span data-count="131">f</span>alse
     else
-      <span data-count="5292">l</span>et multiplier : Lib.position_key =
+      <span data-count="8641">l</span>et multiplier : Lib.position_key =
         if start.x - dest.x &gt; 0 then (* piece is moving left *)
-          <span data-count="2733">{</span> x = -1; y = 0 }
+          <span data-count="5047">{</span> x = -1; y = 0 }
         else
           (* piece is moving right *)
-          <span data-count="4473">{</span> x = 1; y = 0 }
+          <span data-count="5508">{</span> x = 1; y = 0 }
       in
       aux_can_move board_state start dest
         { x = start.x + multiplier.x; y = start.y + multiplier.y }
@@ -1344,22 +1344,22 @@ module Board_state = struct
   (*Helper function to check if a friendly piece is in the destination position*)
   let teammate_in_pos (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
-    <span data-count="3089">l</span>et col = (Map.find_ex<span data-count="3008">n</span> board start).color in
+    <span data-count="22941">l</span>et col = (Map.find_ex<span data-count="22860">n</span> board start).color in
     match Map.find board dest with
-    | <span data-count="2180">N</span>one -&gt; false
-    | <span data-count="917">S</span>ome x -&gt; (
+    | <span data-count="21521">N</span>one -&gt; false
+    | <span data-count="1428">S</span>ome x -&gt; (
         match (x.color, col) with
         | <span data-count="480">L</span>ib.Black, Lib.Black -&gt; true
-        | <span data-count="457">L</span>ib.White, Lib.White -&gt; true
-        | <span data-count="200">_</span>, _ -&gt; false)
+        | <span data-count="483">L</span>ib.White, Lib.White -&gt; true
+        | <span data-count="685">_</span>, _ -&gt; false)
 
   (*Helper function that classifies the move direction as horizontal, vertical, or diagonal*)
   let aux_get_move_direction (start : position_key) (dest : position_key) :
       move_direction =
-    <span data-count="21526">l</span>et x_diff = abs (start.x - dest.x) in
-    <span data-count="24936">l</span>et y_diff = abs (start.y - dest.y) in
-    <span data-count="17316">i</span>f x_diff = 0 &amp;&amp; <span data-count="7348">y</span>_diff &gt; 0 then <span data-count="11178">V</span>ertical
-    else <span data-count="17968">i</span>f x_diff &gt; 0 &amp;&amp; <span data-count="10508">y</span>_diff = 0 then <span data-count="4675">H</span>orizontal
+    <span data-count="28419">l</span>et x_diff = abs (start.x - dest.x) in
+    <span data-count="31829">l</span>et y_diff = abs (start.y - dest.y) in
+    <span data-count="24209">i</span>f x_diff = 0 &amp;&amp; <span data-count="10892">y</span>_diff &gt; 0 then <span data-count="14722">V</span>ertical
+    else <span data-count="21317">i</span>f x_diff &gt; 0 &amp;&amp; <span data-count="13857">y</span>_diff = 0 then <span data-count="8024">H</span>orizontal
     else <span data-count="13314">D</span>iagonal
 
   (*
@@ -1370,7 +1370,7 @@ module Board_state = struct
   let valid_move_king (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
     (*Teammate is already in destination*)
-    <span data-count="4649">i</span>f teammate_in_pos board start dest then <span data-count="3038">f</span>alse else <span data-count="4184">t</span>rue
+    <span data-count="24501">i</span>f teammate_in_pos board start dest then <span data-count="3064">f</span>alse else <span data-count="24010">t</span>rue
 
   (*
     Helper function to check if a movement is a valid queen movement
@@ -1440,9 +1440,9 @@ module Board_state = struct
   *)
   let valid_move_rook (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
-    <span data-count="9870">m</span>atch aux_get_move_direction start dest with
-    | <span data-count="4304">V</span>ertical -&gt; can_move_vertical board start dest
-    | <span data-count="5759">H</span>orizontal -&gt; can_move_horizontal board start dest
+    <span data-count="16763">m</span>atch aux_get_move_direction start dest with
+    | <span data-count="7848">V</span>ertical -&gt; can_move_vertical board start dest
+    | <span data-count="9108">H</span>orizontal -&gt; can_move_horizontal board start dest
     | <span data-count="81">D</span>iagonal -&gt; false
 
   (*Checks to see if it is a valid_move
@@ -1451,33 +1451,33 @@ module Board_state = struct
   *)
   let valid_move (board : t) (start : Lib.position_key)
       (dest : Lib.position_key) : bool =
-    <span data-count="23958">m</span>atch Map.find board start with
+    <span data-count="50703">m</span>atch Map.find board start with
     | <span data-count="1154">N</span>one -&gt; false
-    | <span data-count="27038">S</span>ome x -&gt; (
+    | <span data-count="53783">S</span>ome x -&gt; (
         match x.piece with
         | <span data-count="5309">P</span>awn -&gt; valid_move_pawn board start dest
         | <span data-count="3025">K</span>night -&gt; valid_move_knight board start dest
-        | <span data-count="11520">R</span>ook -&gt; valid_move_rook board start dest
+        | <span data-count="18413">R</span>ook -&gt; valid_move_rook board start dest
         | <span data-count="2907">B</span>ishop -&gt; valid_move_bishop board start dest
         | <span data-count="4319">Q</span>ueen -&gt; valid_move_queen board start dest
-        | <span data-count="3064">K</span>ing -&gt; valid_move_king board start dest)
+        | <span data-count="22916">K</span>ing -&gt; valid_move_king board start dest)
 
   (*Helper method for valid_moves_piece*)
   let rec valid_moves_piece_helper (board : t) (start : Lib.position_key)
       (ls : Lib.position_key list) (valid_ls : movement list) : movement list =
-    <span data-count="26832">m</span>atch ls with
-    | <span data-count="3504">[</span>] -&gt; valid_ls
-    | <span data-count="30954">h</span> :: t -&gt;
+    <span data-count="53954">m</span>atch ls with
+    | <span data-count="7622">[</span>] -&gt; valid_ls
+    | <span data-count="53958">h</span> :: t -&gt;
         if valid_move board start h then
-          <span data-count="9504">v</span>alid_moves_piece_helper board start t
+          <span data-count="32025">v</span>alid_moves_piece_helper board start t
             ({ start; dest = h } :: valid_ls)
-        else <span data-count="14979">v</span>alid_moves_piece_helper board start t valid_ls
+        else <span data-count="15462">v</span>alid_moves_piece_helper board start t valid_ls
 
   (*Returns all valid moves for a given piece in {start, end} format for each element*)
   let valid_moves_piece (board : t) (start : Lib.position_key) : movement list =
-    <span data-count="3505">m</span>atch Map.find board start with
+    <span data-count="7623">m</span>atch Map.find board start with
     | <span data-count="1074">N</span>one -&gt; []
-    | <span data-count="4331">S</span>ome x -&gt; (
+    | <span data-count="8449">S</span>ome x -&gt; (
         match x.piece with
         | <span data-count="14282">P</span>awn -&gt;
             valid_moves_piece_helper board start
@@ -1487,9 +1487,9 @@ module Board_state = struct
             valid_moves_piece_helper board start
               (Lib.Knight.generate_move<span data-count="12220">s</span> start x.color)
               []
-        | <span data-count="588">R</span>ook -&gt;
+        | <span data-count="860">R</span>ook -&gt;
             valid_moves_piece_helper board start
-              (Lib.Rook.generate_move<span data-count="2781">s</span> start x.color)
+              (Lib.Rook.generate_move<span data-count="3053">s</span> start x.color)
               []
         | <span data-count="415">B</span>ishop -&gt;
             valid_moves_piece_helper board start
@@ -1499,43 +1499,43 @@ module Board_state = struct
             valid_moves_piece_helper board start
               (Lib.Queen.generate_move<span data-count="2143">s</span> start x.color)
               []
-        | <span data-count="649">K</span>ing -&gt;
+        | <span data-count="4495">K</span>ing -&gt;
             valid_moves_piece_helper board start
-              (Lib.King.generate_move<span data-count="11522">s</span> start x.color)
+              (Lib.King.generate_move<span data-count="15368">s</span> start x.color)
               [])
 
   (*Returns all possible moves given a color doesn't check for if the board would be in check after moving there*)
   let valid_moves_color_no_check (board : t) (c : Lib.color) : movement list =
-    <span data-count="659">M</span>ap.fold board ~init:[] ~f:(fun ~key ~data accum -&gt;
-        <span data-count="8905">i</span>f matches_color data.color c then <span data-count="3547">a</span>ccum @ valid_moves_piec<span data-count="3626">e</span> board key
-        else <span data-count="4340">a</span>ccum)
+    <span data-count="4516">M</span>ap.fold board ~init:[] ~f:(fun ~key ~data accum -&gt;
+        <span data-count="24322">i</span>f matches_color data.color c then <span data-count="7665">a</span>ccum @ valid_moves_piec<span data-count="7744">e</span> board key
+        else <span data-count="15639">a</span>ccum)
 
   let pos_equal (a : Lib.position_key) (b : Lib.position_key) : bool =
-    <span data-count="10185">i</span>f a.x = b.x &amp;&amp; <span data-count="3149">a</span>.y = b.y then <span data-count="2179">t</span>rue else <span data-count="10712">f</span>alse
+    <span data-count="29091">i</span>f a.x = b.x &amp;&amp; <span data-count="9301">a</span>.y = b.y then <span data-count="2190">t</span>rue else <span data-count="29607">f</span>alse
 
   let in_check (board : t) (c : Lib.color) : bool =
-    <span data-count="2540">l</span>et opposite_color =
-      match c with <span data-count="2347">L</span>ib.Black -&gt; Lib.White | <span data-count="3514">L</span>ib.White -&gt; Lib.Black
+    <span data-count="6271">l</span>et opposite_color =
+      match c with <span data-count="2362">L</span>ib.Black -&gt; Lib.White | <span data-count="7230">L</span>ib.White -&gt; Lib.Black
     in
     (*finds king position of color specified*)
     let king_pos =
       Map.fold board ~init:{ x = 0; y = 0 } ~f:(fun ~key ~data accum -&gt;
-          <span data-count="7642">i</span>f equal_piece_typ<span data-count="8517">e</span> data.piece King &amp;&amp; <span data-count="1220">m</span>atches_colo<span data-count="1274">r</span> data.color c then
-            <span data-count="8217">k</span>ey
-          else <span data-count="8447">a</span>ccum)
+          <span data-count="22555">i</span>f equal_piece_typ<span data-count="23430">e</span> data.piece King &amp;&amp; <span data-count="8671">m</span>atches_colo<span data-count="8725">r</span> data.color c then
+            <span data-count="11948">k</span>ey
+          else <span data-count="19629">a</span>ccum)
     in
     (*Finds if there is a valid move the king position by seeing if valid_moves_color gives a valid_move to king position*)
-    <span data-count="8411">v</span>alid_moves_color_no_chec<span data-count="2540">k</span> board opposite_color
+    <span data-count="12142">v</span>alid_moves_color_no_chec<span data-count="6271">k</span> board opposite_color
     |&gt; List.fold ~init:false ~f:(fun accum move -&gt;
-           <span data-count="11820">i</span>f pos_equal move.dest king_pos then <span data-count="241">t</span>rue else <span data-count="9638">a</span>ccum)
+           <span data-count="30726">i</span>f pos_equal move.dest king_pos then <span data-count="252">t</span>rue else <span data-count="28533">a</span>ccum)
 
   let move (board : t) (start : Lib.position_key) (dest : Lib.position_key) : t
       =
-    <span data-count="600">i</span>f not (valid_mov<span data-count="2547">e</span> board start dest) then <span data-count="13">b</span>oard
+    <span data-count="4341">i</span>f not (valid_mov<span data-count="6288">e</span> board start dest) then <span data-count="13">b</span>oard
     else
-      <span data-count="611">l</span>et start_piece = Map.fin<span data-count="1559">d</span> board start |&gt; Option.value_exn in
+      <span data-count="4352">l</span>et start_piece = Map.fin<span data-count="5300">d</span> board start |&gt; Option.value_exn in
       (*remove pieces and start and end and move start piece to end location*)
-      <span data-count="3506">l</span>et piece_to_add =
+      <span data-count="7247">l</span>et piece_to_add =
         match start_piece.piece with
         | <span data-count="1097">P</span>awn -&gt;
             if matches_colo<span data-count="1071">r</span> start_piece.color Black &amp;&amp; <span data-count="7662">d</span>est.y = 7 then
@@ -1543,31 +1543,31 @@ module Board_state = struct
             else <span data-count="1091">i</span>f matches_colo<span data-count="303">r</span> start_piece.color White &amp;&amp; <span data-count="7843">d</span>est.y = 0 then
               <span data-count="962">w</span>hite_queen
             else <span data-count="1066">s</span>tart_piece
-        | <span data-count="501">_</span> -&gt; start_piece
+        | <span data-count="4242">_</span> -&gt; start_piece
       in
-      Map.remov<span data-count="611">e</span> (Map.remov<span data-count="599">e</span> board start) dest
+      Map.remov<span data-count="4352">e</span> (Map.remov<span data-count="4340">e</span> board start) dest
       |&gt; Map.add_exn ~key:dest ~data:piece_to_add
 
   (*Returns all possible moves for a given color*)
   let valid_moves_color (board : t) (c : Lib.color) : movement list =
     (*List fold over valid_moves_color_no_check where it just makes the hypothetical move and sees in the board is in check then*)
-    <span data-count="1029">L</span>ist.fold (valid_moves_color_no_chec<span data-count="54">k</span> board c) ~init:[] ~f:(fun accum ele -&gt;
-        <span data-count="1572">i</span>f in_check (mov<span data-count="585">e</span> board ele.start ele.dest) c then <span data-count="1136">a</span>ccum
-        else <span data-count="436">e</span>le :: accum)
+    <span data-count="1155">L</span>ist.fold (valid_moves_color_no_chec<span data-count="180">k</span> board c) ~init:[] ~f:(fun accum ele -&gt;
+        <span data-count="5187">i</span>f in_check (mov<span data-count="4200">e</span> board ele.start ele.dest) c then <span data-count="1147">a</span>ccum
+        else <span data-count="4040">e</span>le :: accum)
 
   let in_stalemate (board : t) (c : Lib.color) : bool =
     <span data-count="886">L</span>ist.lengt<span data-count="11">h</span> (valid_moves_colo<span data-count="998">r</span> board c) = 0 &amp;&amp; <span data-count="117">n</span>ot (in_chec<span data-count="992">k</span> board c)
 
   let in_checkmate (board : t) (c : Lib.color) : bool =
-    <span data-count="133">L</span>ist.lengt<span data-count="197">h</span> (valid_moves_colo<span data-count="720">r</span> board c) = 0 &amp;&amp; <span data-count="882">i</span>n_check board c
+    <span data-count="249">L</span>ist.lengt<span data-count="313">h</span> (valid_moves_colo<span data-count="836">r</span> board c) = 0 &amp;&amp; <span data-count="882">i</span>n_check board c
 
   let next_player (current_p : Lib.color) : Lib.color =
-    <span data-count="20">m</span>atch current_p with <span data-count="16">W</span>hite -&gt; Black | <span data-count="4">B</span>lack -&gt; White
+    <span data-count="377">m</span>atch current_p with <span data-count="137">W</span>hite -&gt; Black | <span data-count="240">B</span>lack -&gt; White
 
   let get_piece (board : t) (pos_key : Lib.position_key) : map_value =
-    <span data-count="48">M</span>ap.find_exn board pos_key
+    <span data-count="512">M</span>ap.find_exn board pos_key
 
-  let get_keys (board : t) : Lib.position_key list = <span data-count="5">M</span>ap.keys board
+  let get_keys (board : t) : Lib.position_key list = <span data-count="121">M</span>ap.keys board
 end
 </code></pre>
       </div>

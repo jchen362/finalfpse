@@ -735,7 +735,9 @@ let test_generate_next_move _ =
   assert_equal post_valid_move
   @@ Minimax.generate_next_move one_valid_move 'W' 1;
   assert_equal "k6R/6R1/8/8/8/8/8/2K5"
-  @@ Minimax.generate_next_move "k7/6R1/8/8/8/8/8/2K4R" 'W' 1
+  @@ Minimax.generate_next_move "k7/6R1/8/8/8/8/8/2K4R" 'W' 1;
+  assert_equal "k6R/6R1/8/8/8/8/8/2K5"
+  @@ Minimax.generate_next_move "k7/6R1/8/8/8/8/8/2K4R" 'W' 2
 
 let chess_ai_tests =
   "chess ai tests"
